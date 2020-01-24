@@ -1,0 +1,16 @@
+{
+  "name": "fec-app",
+  "version": "1.0.0",
+  "description": "schedule-form module component for mockbnb",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "adrian tran",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.8.9"
+  }
+}
