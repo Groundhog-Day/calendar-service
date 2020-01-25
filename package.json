@@ -2,20 +2,33 @@
   "name": "fec-app",
   "version": "1.0.0",
   "description": "schedule-form module component for mockbnb",
+  "main": "webpack.config.js",
   "private": true,
   "scripts": {
     "start": "nodemon server/index.js",
     "build": "webpack --watch",
+    "react-dev": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "adrian tran",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.8.9"
+    "mongoose": "^5.8.9",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-react": "^7.8.3",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.4.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^1.1.3",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
   }
 }
