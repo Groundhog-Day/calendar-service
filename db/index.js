@@ -26,32 +26,48 @@ let reservationSchema = new mongoose.Schema({
 let accommodationSchema = new mongoose.Schema({
   accommodationId: Number,
   costPerNight: Number,
-  ratingsCount: Number,
+  reviewsCount: Number,
+  ratingScore: Number,
   cleaningFee: Number,
   serviceFee: Number,
-  ratingScore: Number
+  occupancyFee: Number
 });
 
 let Reservation = mongoose.model("Reservation", reservationSchema);
 let Accommodation = mongoose.model("Accommodation", accommodationSchema);
 
-Accommodation.deleteMany((err, accommodations) => {});
+//////// clears db collection of all rows and seeds accommodations
+// Accommodation.deleteMany((err, accs) => {});
 
-for (let i = 0; i < 100; i++) {
-  let accommodation = new Accommodation({
-    accommodationId: i,
-    costPerNight: [99, 89, 79, 110, 99, 149, 199, 299, 89, 119][Math.floor(Math.random() * Math.floor(9))],
-    ratingsCount: Math.round(Math.random() * Math.floor(500)),
-    cleaningFee: [29,39,59][Math.floor(Math.random() * Math.floor(3))],
-    serviceFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
-    ratingScore: (4 + Math.random(5)).toFixed(2)
+
+// seeds collection with rows
+// for (let i = 0; i < 100; i++) {
+//   let accommodation = new Accommodation({
+//     accommodationId: i,
+//     costPerNight: [99, 89, 79, 110, 99, 149, 199, 299, 89, 119][Math.floor(Math.random() * Math.floor(9))],
+//     reviewsCount: Math.round(Math.random() * Math.floor(500)),
+//     ratingScore: (4 + Math.random(5)).toFixed(2),
+//     cleaningFee: [29,39,59][Math.floor(Math.random() * Math.floor(3))],
+//     serviceFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
+//     occupancyFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
+//   });
+
+//   accommodation.save((err, accommodation) => {
+//     if (err) {
+//       console.log('error: ', err);
+//     }
+//     console.log(accommodation.accommodationId + ' has successfully been added')
+//   })
+// };
+
+
+const retrieveCollection = cb => {
+  Accommodation.find((err, accommodations) => {
+    if (err) return err;
+    cb(accommodations);
   });
-
-  accommodation.save((err, accommodation) => {
-    if (err) {
-      console.log('error: ', err);
-    }
-    console.log(accommodation.accommodationId + ' has successfully been added')
-  })
 };
 
+module.exports = {
+  retrieveCollection
+}
