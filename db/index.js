@@ -52,7 +52,16 @@ for (let i = 0; i < 100; i++) {
 
   for (let d=0; d<10; d++) {
     let date = makeDate();
-    dates.push(date, date + 1, date + 2);
+    let strDate = date.toString().split('');
+    let day = strDate[1] + strDate[2];
+
+    if (Number(day) === 31) {
+      dates.push(date)
+    } else if (Number(day) === 30) {
+    dates.push(date, date + 1);
+    } else {
+      dates.push(date, date + 1, date + 2);
+    }
   }
 
   let accommodation = new Accommodation({
