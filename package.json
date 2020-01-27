@@ -6,8 +6,9 @@
   "private": true,
   "scripts": {
     "start": "nodemon server/index.js",
-    "build": "webpack --watch",
-    "react-dev": "webpack-dev-server",
+    "seed": "node db/index.js",
+    // "build": "webpack --watch",
+    "react-dev": "webpack-dev-server --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "adrian tran",

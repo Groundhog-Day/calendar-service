@@ -46,18 +46,18 @@ for (let i = 0; i < 100; i++) {
 
   const makeDate = () => {
     let month = [100,200,300,400,500,600];
-    let days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30];
+    let days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
     return month[Math.floor(Math.random() * Math.floor(6))] + days[Math.floor(Math.random() * Math.floor(30))];
   };
 
   for (let d=0; d<10; d++) {
-    let x = makeDate();
-    dates.push(x, x+1, x+2);
+    let date = makeDate();
+    dates.push(date, date + 1, date + 2);
   }
 
   let accommodation = new Accommodation({
     accommodationId: i,
-    costPerNight: [99, 89, 79, 110, 99, 149, 199, 299, 89, 119][Math.floor(Math.random() * Math.floor(9))],
+    costPerNight: [99,89,79,110,99,149,199,299,89,119][Math.floor(Math.random() * Math.floor(9))],
     reviewsCount: Math.round(Math.random() * Math.floor(500)),
     ratingScore: (4 + Math.random(5)).toFixed(2),
     reservedDates: dates,
@@ -74,7 +74,7 @@ for (let i = 0; i < 100; i++) {
   })
 };
 
-
+// DB HELPERS FOR API REQUESTS
 const retrieveCollection = cb => {
   Accommodation.find((err, accommodations) => {
     if (err) return err;
