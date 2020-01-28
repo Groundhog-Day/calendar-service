@@ -1,4 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './components/App.js';
 
-ReactDOM.render(<h1>tuna tataki furakake miso karage</h1>, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('app'));
