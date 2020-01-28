@@ -1,12 +1,12 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import { shallow } from 'enzyme';
 import App from '../components/App.js';
 
 describe('App', () => {
-  test('snapshot renders', () => {
-    const component = renderer.create(<App />);
-    let tree = component.toJSON();
+  test('App component h1 tag should equal tuna tataki furakake miso karage', () => {
+    const wrap = shallow(<App />)
 
-    expect(tree).toMatchSnapshot();
+    expect(wrap.find('h1').text()).toEqual('tuna tataki furakake miso karage')
+    expect(wrap.containsMatchingElement(<h1>tuna tataki furakake miso karage</h1>)).toBeTruthy()
   })
 });
