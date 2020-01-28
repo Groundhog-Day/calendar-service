@@ -8,7 +8,7 @@ mongoose.connect("mongodb://localhost/airBnbSchedulings", {
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => console.log("CONNECTION ESTABLISHED BLEEP BLOOP"));
+db.once("open", () => console.log("CONNECTION ESTABLISHED"));
 
 let reservationSchema = new mongoose.Schema({
   accommodationId: Number,
@@ -58,7 +58,7 @@ for (let i = 0; i < 100; i++) {
     if (Number(day) === 31) {
       dates.push(date)
     } else if (Number(day) === 30) {
-    dates.push(date, date + 1);
+      dates.push(date, date + 1);
     } else {
       dates.push(date, date + 1, date + 2);
     }
