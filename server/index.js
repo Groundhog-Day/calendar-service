@@ -9,7 +9,8 @@ let app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname)));
+// console.log(path.join(__dirname, '../client'))
+app.use(express.static(path.join(__dirname, '../client', 'dist')));
 
 app.get('/api/v1/listings', (req, res) => {
   retrieveCollection(result => {

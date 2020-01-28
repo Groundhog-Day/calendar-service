@@ -1,10 +1,5 @@
-function component() {
-  const element = document.createElement('div');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './components/App.js';
 
-  // Lodash, currently included via a script, is required for this line to work
-  element.innerHTML = 'tuna tataki furakake miso karage';
-
-  return element;
-}
-
-document.body.appendChild(component());
+ReactDOM.render(<App />, document.getElementById('app'));
