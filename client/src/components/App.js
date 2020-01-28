@@ -1,9 +1,10 @@
 import React from "react";
+import Checkout from './Checkout.js';
 
  const App = () => {
   return (
-    <div>
-      <h1>tuna tataki furakake miso karage</h1>
+    <div className="App">
+      <Checkout />
     </div>
   );
 };
