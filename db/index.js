@@ -28,6 +28,7 @@ let accommodationSchema = new mongoose.Schema({
   costPerNight: Number,
   reviewsCount: Number,
   ratingScore: Number,
+  maxGuests: Number,
   reservedDates: [String],
   cleaningFee: Number,
   serviceFee: Number,
@@ -38,55 +39,58 @@ let accommodationSchema = new mongoose.Schema({
 let Accommodation = mongoose.model("Accommodation", accommodationSchema);
 
 //////// CLEARS DB COLLECTION
-Accommodation.deleteMany((err, accs) => {});
+// Accommodation.deleteMany((err, accs) => {});
 
-// SEEDER
-for (let i = 0; i < 2; i++) {
-  let dates = [];
+// // SEEDER
+// for (let i = 0; i < 100; i++) {
+//   let dates = [];
 
-  const makeDate = () => {
-    let month = [100,200,300,400,500,600];
-    let days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-    return month[Math.floor(Math.random() * Math.floor(6))] + days[Math.floor(Math.random() * Math.floor(30))];
-  };
+//   const makeDate = () => {
+//     let month = [100,200,300,400,500,600];
+//     let days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+//     return month[Math.floor(Math.random() * Math.floor(6))] + days[Math.floor(Math.random() * Math.floor(30))];
+//   };
 
-  for (let d=0; d<10; d++) {
-    let date = makeDate();
-    let strDate = date.toString().split('');
-    let day = strDate[1] + strDate[2];
+//   for (let d=0; d<10; d++) {
+//     let date = makeDate();
+//     let strDate = date.toString().split('');
+//     let day = strDate[1] + strDate[2];
 
-    if (Number(day) === 31) {
-      dates.push(date.toString())
-    } else if (Number(day) === 30) {
-      dates.push(date.toString(), (date + 1).toString());
-    } else {
-      dates.push(date.toString(), (date + 1).toString(), (date + 2).toString());
-    }
-  }
+//     if (Number(day) === 31) {
+//       dates.push(date.toString())
+//     } else if (Number(day) === 30) {
+//       dates.push(date.toString(), (date + 1).toString());
+//     } else {
+//       dates.push(date.toString(), (date + 1).toString(), (date + 2).toString());
+//     }
+//   }
 
-  let accommodation = new Accommodation({
-    accommodationId: i,
-    costPerNight: [99,89,79,110,99,149,199,299,89,119][Math.floor(Math.random() * Math.floor(9))],
-    reviewsCount: Math.round(Math.random() * Math.floor(500)),
-    ratingScore: (4 + Math.random(5)).toFixed(2),
-    reservedDates: dates,
-    cleaningFee: [29,39,59][Math.floor(Math.random() * Math.floor(3))],
-    serviceFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
-    occupancyFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
-  });
+//   let accommodation = new Accommodation({
+//     accommodationId: i,
+//     costPerNight: [99,89,79,110,99,149,199,299,89,119][Math.floor(Math.random() * Math.floor(9))],
+//     reviewsCount: Math.round(Math.random() * Math.floor(500)),
+//     ratingScore: (4 + Math.random(5)).toFixed(2),
+//     reservedDates: dates,
+//     maxGuests: [3,4,5,6,7][Math.floor(Math.random() * Math.floor(5))],
+//     cleaningFee: [29,39,59][Math.floor(Math.random() * Math.floor(3))],
+//     serviceFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
+//     occupancyFee: [19,29][Math.floor(Math.random() * Math.floor(2))],
+//   });
 
-  accommodation.save((err, accommodation) => {
-    if (err) {
-      console.log('error: ', err);
-    }
-    console.log(accommodation.accommodationId + ' has successfully been added')
-  })
-}
+//   accommodation.save((err, accommodation) => {
+//     if (err) {
+//       console.log('error: ', err);
+//     }
+//     console.log(accommodation.accommodationId + ' has successfully been added')
+//   })
+// }
 
 // DB HELPERS FOR API REQUESTS
 const retrieveCollection = cb => {
   Accommodation.find((err, accommodations) => {
-    if (err) return err;
+    if (err) {
+      return err;
+    }
     cb(accommodations);
   });
 };
