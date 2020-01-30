@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-export default function Checkout(props) {
+const Checkout = (props) => {
   const [startDateActive, setStartDateActive] = useState(false);
   const [endDateActive, setEndDateActive] = useState(false);
   const [guestTabActive, setGuestTabActive] = useState(false);
@@ -32,6 +32,12 @@ export default function Checkout(props) {
     }
     if (name === 'end') {
       setEndDateActive(!endDateActive);
+      setGuestTabActive(false);
+    }
+    if (name === 'guest') {
+      setGuestTabActive(!guestTabActive);
+    }
+    if (name === 'close-guest') {
       setGuestTabActive(false);
     }
     if (name === 'addAdult') {
@@ -65,12 +71,6 @@ export default function Checkout(props) {
       if (infants > 0) {
         setInfants(infants => infants - 1);
       }
-    }
-    if (name === 'guest') {
-      setGuestTabActive(!guestTabActive);
-    }
-    if (name === 'close-guest') {
-      setGuestTabActive(false);
     }
   };
 
@@ -191,7 +191,7 @@ export default function Checkout(props) {
           <p>${costPerNight * totalDays}</p>
         </div>
         <div className="row">
-          <p>Cleaning fee <i onClick="" className="far fa-question-circle" />
+          <p>Cleaning fee <i className="far fa-question-circle" />
           </p>
           <p>${cleaningFee}</p>
         </div>
@@ -228,3 +228,5 @@ Checkout.propTypes = {
   serviceFee: PropTypes.number,
   occupancyFee: PropTypes.number
 };
+
+export default Checkout;
