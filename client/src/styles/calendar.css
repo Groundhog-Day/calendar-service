@@ -1,0 +1,46 @@
+
+.calendar-component {
+  width: 332px;
+}
+
+.days-of-week {
+  display: flex;
+  justify-content: space-around;
+}
+
+.days-of-week p {
+  width: 40px;
+  height: 20px;
+  font-weight: 600;
+  color: #585858;
+}
+
+.week {
+  display: flex;
+  justify-content: flex-start;
+}
+
+td {
+  display: table-cell;
+  vertical-align: inherit;
+}
+
+.week td {
+  width: 41px;
+  height: 40px;
+  border: solid 0.2px rgb(228, 231, 231);
+  color: rgb(72, 72, 72);
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  font-size: 12pt !important;
+  text-align: center !important;
+}
+
+.day {
+}

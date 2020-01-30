@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
-import './checkout.css';
-import './calendar.css';
+import './styles/checkout.css';
+import './styles/calendar.css';
 
 ReactDOM.render(<App />, document.getElementById('app'));
