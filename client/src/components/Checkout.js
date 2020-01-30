@@ -217,7 +217,7 @@ const Checkout = (props) => {
       </div>
     </div>
   );
-}
+}                 `````                         1 
 
 Checkout.propTypes = {
   reservedDates: PropTypes.array,
