@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-const Checkout = (props) => {
+export default function Checkout(props) {
   const [startDateActive, setStartDateActive] = useState(false);
   const [endDateActive, setEndDateActive] = useState(false);
   const [guestTabActive, setGuestTabActive] = useState(false);
@@ -16,6 +16,7 @@ const Checkout = (props) => {
     costPerNight,
     reviewsCount,
     ratingScore,
+    maxGuests,
     cleaningFee,
     serviceFee,
     occupancyFee
@@ -41,7 +42,7 @@ const Checkout = (props) => {
       setGuestTabActive(false);
     }
     if (name === 'addAdult') {
-      if (guests < 5) {
+      if (guests < maxGuests) {
         setAdults(adults => adults + 1);
         setGuests(guests => guests + 1);
       }
@@ -53,7 +54,7 @@ const Checkout = (props) => {
       }
     }
     if (name === 'addChild') {
-      if (guests < 5) {
+      if (guests < maxGuests) {
         setChildren(children => children + 1);
         setGuests(guests => guests + 1);
       }
@@ -132,7 +133,7 @@ const Checkout = (props) => {
                 }
                 <h5>{adults}</h5>
                 {
-                  (guests >= 5)
+                  (guests >= maxGuests)
                     ? <button className="non-targetable-btn">-</button>
                     : <button name="addAdult" onClick={e => handleSelect(e)}>+</button>
                 }
@@ -151,7 +152,7 @@ const Checkout = (props) => {
                 }
                 <h5>{children}</h5>
                 {
-                  (guests >= 5)
+                  (guests >= maxGuests)
                     ? <button className="non-targetable-btn">-</button>
                     : <button name="addChild" onClick={e => handleSelect(e)}>+</button>
                 }
@@ -174,7 +175,7 @@ const Checkout = (props) => {
             </div>
             <div className="guest-row guest-prompt">
             <h6>
-              5 guests maximum. Infants don't count toward the number of guests.
+              {maxGuests} guests maximum. Infants don't count toward the number of guests.
             </h6>
             </div>
             <div className="guest-row close-section">
@@ -217,7 +218,7 @@ const Checkout = (props) => {
       </div>
     </div>
   );
-}                 `````                         1 
+}
 
 Checkout.propTypes = {
   reservedDates: PropTypes.array,
@@ -228,5 +229,3 @@ Checkout.propTypes = {
   serviceFee: PropTypes.number,
   occupancyFee: PropTypes.number
 };
-
-export default Checkout;
