@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from 'react';
+import Checkout from './Checkout';
 
- const App = () => {
+export default function App() {
+  const [accommodation, setAccommodation] = useState(null);
+  
+
+  fetch('/api/v1/listings').then((res) => {
+    return res.json();
+  }).then(accommodations => {
+    console.log(accommodations[0])
+    setAccommodation(accommodations[0])
+  })
+
   return (
-    <div>
-      <h1>tuna tataki furakake miso karage</h1>
+    <div className="App">
+      {accommodation && <Checkout accommodation={accommodation} />}
     </div>
   );
-};
-
-export default App;
+}

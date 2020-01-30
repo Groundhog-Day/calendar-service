@@ -28,20 +28,20 @@ let accommodationSchema = new mongoose.Schema({
   costPerNight: Number,
   reviewsCount: Number,
   ratingScore: Number,
-  reservedDates: [Number],
+  reservedDates: [String],
   cleaningFee: Number,
   serviceFee: Number,
   occupancyFee: Number
 });
 
-let Reservation = mongoose.model("Reservation", reservationSchema);
+// let Reservation = mongoose.model("Reservation", reservationSchema);
 let Accommodation = mongoose.model("Accommodation", accommodationSchema);
 
 //////// CLEARS DB COLLECTION
 Accommodation.deleteMany((err, accs) => {});
 
 // SEEDER
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < 2; i++) {
   let dates = [];
 
   const makeDate = () => {
@@ -56,11 +56,11 @@ for (let i = 0; i < 100; i++) {
     let day = strDate[1] + strDate[2];
 
     if (Number(day) === 31) {
-      dates.push(date)
+      dates.push(date.toString())
     } else if (Number(day) === 30) {
-      dates.push(date, date + 1);
+      dates.push(date.toString(), (date + 1).toString());
     } else {
-      dates.push(date, date + 1, date + 2);
+      dates.push(date.toString(), (date + 1).toString(), (date + 2).toString());
     }
   }
 
@@ -81,7 +81,7 @@ for (let i = 0; i < 100; i++) {
     }
     console.log(accommodation.accommodationId + ' has successfully been added')
   })
-};
+}
 
 // DB HELPERS FOR API REQUESTS
 const retrieveCollection = cb => {
