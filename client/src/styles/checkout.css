@@ -18,13 +18,23 @@ p {
   justify-content: center;
 }
 
+.calendar-date-selection-card {
+  position: absolute;
+  margin-top: 37px;
+  margin-left: -15px;
+  background-color: #fff;
+  padding: 20px;
+  border: solid 0.8px #e4e4e4;
+  border-radius: 3px;
+}
+
 /* checkout component styling */
 
 .checkout-container {
   padding-left: 24px !important;
   padding-right: 24px !important;
   margin-top: 50px;
-  width: 300px;
+  width: 320px;
   border: solid 1.2px #e4e4e4;
   border-radius: 2px;
   display: flex;
@@ -33,11 +43,38 @@ p {
 }
 
 .fa-question-circle {
-  color: #909090;
+  color: #707070;
 }
 .fa-star {
-  color: #1a9488;
+  color: rgb(4, 137, 152);
   font-size: 6pt;
+  margin-bottom: 3px;
+  margin-right: 1px;
+}
+
+.arrow {
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.activate-start-date-picker {
+  background-color: rgb(105, 233, 247);
+  border-radius: 3px;
+  padding: 1px;
+  padding-right: 25px;
+  opacity: 0.8;
+}
+
+.activate-end-date-picker {
+  background-color: rgb(105, 233, 247);
+  border-radius: 3px;
+  padding: 1px;
+  padding-right: 25px;
+  opacity: 0.8;
+}
+
+.active-date-cell {
+  background-color: #007D8C;
 }
 
 .fa-chevron-down {
@@ -57,6 +94,10 @@ p {
   padding: 5px;
   border-top: solid 1.1px #e4e4e4;
   border-bottom: solid 1.1px #e4e4e4;
+}
+
+.bold {
+  font-weight: 600;
 }
 
 .dates {
@@ -95,6 +136,19 @@ p {
   margin-bottom: 5px;
 }
 
+.question-prompt {
+  border: none;
+  outline: none;
+  font-size: 9pt;
+  cursor: pointer;
+  padding-left: 4px;
+}
+
+.question-prompt:hover {
+  color: #35968c;
+}
+
+
 .rating {
   font-weight: 600;
 }
@@ -106,6 +160,10 @@ p {
 .reviews {
   color: #808080;
   font-weight: 400;
+}
+
+.reviews p {
+  margin-right: 2px;
 }
 
 .daily-cost {
@@ -151,10 +209,10 @@ p {
 .guest-selection-card {
   position: absolute;
   background-color: #fff;
-  width: 298px;
+  width: 320px;
   border:solid 1px #e4e4e4;
   border-radius: 4px;
-  margin-top: -8px;
+  margin-top: -6px;
   border-top: solid 2px #1a9488;
   box-shadow: 2px #c9c9c9;
 }
@@ -280,11 +338,13 @@ p {
 .row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-bottom: solid 1px #e4e4e4;
 }
 
 .total {
   padding-bottom: 10px;
+  border-bottom: none;
 }
 
 .total p {
@@ -309,6 +369,8 @@ p {
 }
 
 .charge-comment p {
+  font-size: 9pt;
+  font-weight: 600;
   letter-spacing: 0px;
 }
 

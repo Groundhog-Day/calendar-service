@@ -9,15 +9,23 @@
 }
 
 .days-of-week p {
-  width: 40px;
   height: 20px;
   font-weight: 600;
   color: #585858;
 }
 
+.table {
+  border-collapse:collapse;
+}
+
 .week {
   display: flex;
   justify-content: flex-start;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0px;
 }
 
 td {
@@ -28,19 +36,92 @@ td {
 .week td {
   width: 41px;
   height: 40px;
-  border: solid 0.2px rgb(228, 231, 231);
-  color: rgb(72, 72, 72);
+  color: #383838;
 }
 
 .cell {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  box-sizing: border-box !important;
-  cursor: pointer !important;
-  font-size: 12pt !important;
-  text-align: center !important;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 10pt;
+  font-weight: 600;
+  text-align: center;
+  border: solid 0.2px rgb(228, 231, 231);
 }
 
-.day {
+.cell-inactive {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  box-sizing: border-box;
+  pointer-events: none;
+  font-size: 10pt;
+  font-weight: 600;
+  text-align: center;
+  border: solid 0.2px rgb(228, 231, 231);
+}
+
+.cell:hover {
+  background-color: #e9e9e9;
+}
+
+.cell:focus {
+  outline: none;
+  background-color: rgb(72, 174, 177);
+  border: solid rgb(72, 174, 177);
+  color: #fff;
+}
+
+.week td:focus {
+  color: #fff;
+}
+
+.crossed-out {
+  pointer-events: none;
+  text-decoration: line-through rgb(228, 231, 231);
+  text-decoration-thickness: 0.1em;
+  color: rgb(228, 231, 231);
+}
+
+.clear-dates {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.clear-dates button {
+  border: none;
+  color: #3ba091;
+  padding-top: 20px;
+  padding-bottom: 0px;
+  font-size: 10pt;
+  font-weight: 600;
+  outline: none;
+}
+
+
+.blank {
+  border: none;
+}
+
+.month-selection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-selection h5 {
+  font-weight: 600;
+  font-size: 14pt;
+}
+
+.month-selection button {
+  border: solid 0.2px rgb(228, 231, 231);
+  padding: 8px 15px;
+}
+
+.month-selection button:focus {
+  outline: none;
 }
