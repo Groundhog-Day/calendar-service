@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Calendar from './Calendar';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-const Checkout = (props) => {
+export default function Checkout(props) {
   const [startDateActive, setStartDateActive] = useState(false);
   const [endDateActive, setEndDateActive] = useState(false);
+  const [activeDate, setActiveDate] = useState(null);
+  const [activeStartDatePicker, setActiveStartDatePicker] = useState(false);
+  const [activeEndDatePicker, setActiveEndDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(moment().format('L'));
+  const [endDate, setEndDate] = useState(moment().add(1, 'days').format('L'));
   const [guestTabActive, setGuestTabActive] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [infants, setInfants] = useState(0);
   const [guests, setGuests] = useState(adults + children + infants);
-  const [totalDays, setTotalDays] = useState(3);
+  const totalDays = Math.ceil(Math.abs(new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
   const {
     reservedDates,
     costPerNight,
     reviewsCount,
     ratingScore,
+    maxGuests,
     cleaningFee,
     serviceFee,
     occupancyFee
@@ -28,10 +35,14 @@ const Checkout = (props) => {
 
     if (name === 'start') {
       setStartDateActive(!startDateActive);
+      setActiveStartDatePicker(!activeStartDatePicker)
+      setActiveEndDatePicker(false);
       setGuestTabActive(false);
     }
     if (name === 'end') {
       setEndDateActive(!endDateActive);
+      setActiveStartDatePicker(false);
+      setActiveEndDatePicker(!activeEndDatePicker)
       setGuestTabActive(false);
     }
     if (name === 'guest') {
@@ -41,7 +52,7 @@ const Checkout = (props) => {
       setGuestTabActive(false);
     }
     if (name === 'addAdult') {
-      if (guests < 5) {
+      if (guests < maxGuests) {
         setAdults(adults => adults + 1);
         setGuests(guests => guests + 1);
       }
@@ -53,7 +64,7 @@ const Checkout = (props) => {
       }
     }
     if (name === 'addChild') {
-      if (guests < 5) {
+      if (guests < maxGuests) {
         setChildren(children => children + 1);
         setGuests(guests => guests + 1);
       }
@@ -74,6 +85,37 @@ const Checkout = (props) => {
     }
   };
 
+  const handleDaySelection = (e) => {
+    let date = moment(e.target.dataset.value).format('L');
+
+    setActiveDate('active-date-cell');
+
+    if (startDateActive) {
+      setStartDate(date);
+      setStartDateActive(false);
+      setEndDateActive(true);
+      setActiveStartDatePicker(false);
+      setActiveEndDatePicker(true);
+    }
+
+    if (endDateActive) {
+      if (moment(startDate).format() < moment(e.target.dataset.value).format()) {
+        setEndDate(date);
+        setEndDateActive(false);
+        setActiveEndDatePicker(false);
+      } else {
+        setStartDate(date);
+        setEndDateActive(true);
+        setActiveEndDatePicker(true);
+        setActiveStartDatePicker(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    handleDaySelection
+  }, [startDate, endDate])
+
   return (
     <div className="checkout-container">
       <div className="daily-cost">
@@ -84,22 +126,27 @@ const Checkout = (props) => {
         </div>
       </div>
       <div className="col dates">
-        <p>Dates</p>
+        <p className="bold">Dates</p>
         <div className="date-picker">
+          <a name="start" className={activeStartDatePicker && 'activate-start-date-picker'} onClick={e => handleSelect(e)}>{startDate}</a>
           {
-            !startDateActive
-              ? <a name="start" onClick={e => handleSelect(e)}>{moment().format('L')}</a>
-              : <a name="start" onClick={e => handleSelect(e)} className="start-date-active">{moment().format('L')}</a>
+            startDateActive &&
+            (<div className="calendar-date-selection-card">
+              <Calendar handleDate={handleDaySelection} activated={activeDate} reservedDates={reservedDates}/>
+            </div>)
           }
+          <img className="arrow" height="15" width="30" src="https://www.pngkit.com/png/full/448-4484049_png-file-svg-arrow-right-icon-png.png" />
+          <a name="end" className={activeEndDatePicker && 'activate-end-date-picker'} onClick={e => handleSelect(e)}>{endDate}</a>
           {
-            !endDateActive
-              ? <a name="end" onClick={e => handleSelect(e)}>1/30/2020</a>
-              : <a name="end" onClick={e => handleSelect(e)} className="end-date-active">01/23/2020</a>
+            endDateActive &&
+            (<div className="calendar-date-selection-card">
+              <Calendar handleDate={handleDaySelection} activated={activeDate} />
+            </div>)
           }
         </div>
       </div>
       <div className="col guests">
-        <p>Guests</p>
+        <p className="bold">Guests</p>
         <button name="guest" className="guest-btn" onClick={e => handleSelect(e)}>
           <div className="guest-info">
           {
@@ -132,7 +179,7 @@ const Checkout = (props) => {
                 }
                 <h5>{adults}</h5>
                 {
-                  (guests >= 5)
+                  (guests >= maxGuests)
                     ? <button className="non-targetable-btn">-</button>
                     : <button name="addAdult" onClick={e => handleSelect(e)}>+</button>
                 }
@@ -151,7 +198,7 @@ const Checkout = (props) => {
                 }
                 <h5>{children}</h5>
                 {
-                  (guests >= 5)
+                  (guests >= maxGuests)
                     ? <button className="non-targetable-btn">-</button>
                     : <button name="addChild" onClick={e => handleSelect(e)}>+</button>
                 }
@@ -169,12 +216,16 @@ const Checkout = (props) => {
                     : <button name="removeInfant" onClick={e => handleSelect(e)}>-</button>
                 }
                 <h5>{infants}</h5>
-                <button name="addInfant" onClick={e => handleSelect(e)}>+</button>
+                {
+                  (infants < 5)
+                  ? <button name="addInfant" onClick={e => handleSelect(e)}>+</button>
+                  : <button className="non-targetable-btn">-</button>
+                }
               </div>
             </div>
             <div className="guest-row guest-prompt">
             <h6>
-              5 guests maximum. Infants don't count toward the number of guests.
+              {maxGuests} guests maximum. Infants don't count toward the number of guests.
             </h6>
             </div>
             <div className="guest-row close-section">
@@ -187,20 +238,25 @@ const Checkout = (props) => {
       </div>
       <div className="prices-container">
         <div className="row">
-          <p>${costPerNight} x {totalDays} nights</p>
+          <p>${costPerNight} x {totalDays} {totalDays < 2 ? 'night' : 'nights'}</p>
           <p>${costPerNight * totalDays}</p>
         </div>
         <div className="row">
-          <p>Cleaning fee <i className="far fa-question-circle" />
+          <p>Cleaning fee
+            <i className="far fa-question-circle question-prompt" name="cleaningFee" onClick={e => handleQuestion(e)} />
           </p>
           <p>${cleaningFee}</p>
         </div>
         <div className="row">
-          <p>Service fee <i className="far fa-question-circle" /></p>
+          <p>Service fee
+            <i className="far fa-question-circle question-prompt" name="serviceFee" onClick={e => handleQuestion(e)} />
+          </p>
           <p>${serviceFee}</p>
         </div>
         <div className="row">
-          <p>Occupancy taxes and fees <i className="far fa-question-circle"></i></p>
+          <p>Occupancy taxes and fees
+            <i className="far fa-question-circle question-prompt" name="occupancyFee" onClick={e => handleQuestion(e)} />
+          </p>
           <p>${occupancyFee}</p>
         </div>
         <div className="row total">
@@ -213,7 +269,6 @@ const Checkout = (props) => {
       </div>
       <div className="charge-comment">
         <p>You won’t be charged yet</p>
-        {/* <p>Certain reservations may also require a security deposit.</p> */}
       </div>
     </div>
   );
@@ -228,5 +283,3 @@ Checkout.propTypes = {
   serviceFee: PropTypes.number,
   occupancyFee: PropTypes.number
 };
-
-export default Checkout;
