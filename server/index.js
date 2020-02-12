@@ -1,22 +1,23 @@
-const path = require('path');
 const express = require('express');
-const { retrieveCollection } = require('../db/index.js');
+const path = require('path');
+const morgan = require('morgan');
+const router = require('./router.js');
 
+const app = express();
 const port = process.env.PORT || 3000;
+app.set('port', port);
 
-let app = express();
-
-app.use(express.json());
+// logging and parsing
+app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
-// console.log(path.join(__dirname, '../client'))
+// serve static file
 app.use(express.static(path.join(__dirname, '../client', 'dist')));
 
-app.get('/api/v1/listings', (req, res) => {
-  retrieveCollection(result => {
-    res.send(result);
-  })
-})
+// use router to respond to http request
+app.use('/api/v1/listings', router);
 
-app.listen(port, () => console.log('listening on port: ' + port));
+app.listen(port, () => {
+  console.log('listening on port: ' + port)}
+);
 
