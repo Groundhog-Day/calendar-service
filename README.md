@@ -25,7 +25,7 @@ Expected Response Data Format
 
 #### Read / GET
 **Endpoint**: `/api/v1/listings/:id/`  
-This route returns data about accomodation, such as price per night and the number of review, in object
+This route returns data about accomodation, such as price per night and the number of review.
 
 Expected Request Object Format  
 >{  
@@ -38,11 +38,12 @@ Expected Response Data Format
 > ratingScore: Number,  
 > maxGuests: Number,  
 > minDaysStay: Number,  
-> reservedDates: [ String ] - String is in the format of DDMMYY  
->}
+> reservedDates: [ String, String, ... ]
+>}  
+Even index elements are string about startDate and odd index elements are string about endDate of reservation. Both string are in the form of 'DDMMYY'
 
 **Endpoint**: `/api/v1/listings/:id/reservation/:startDate-:endDate`  
-This route returns different price information about stay over the dates `:startDate` and `:endDate`. Both `:startDate` and `:endDate` should be in the from of 'DDMMYY'.
+This route returns price information about stay over from `:startDate` to `:endDate`. Both `:startDate` and `:endDate` should be in the form of 'DDMMYY'.
 
 Expected Request Object Format  
 >{  
@@ -81,6 +82,8 @@ Expected Response Data Format
 
 #### Delete / DELETE
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
+This route deletes the reservation with id value `:id` from the database.
+
 Expected Request Object Format
 >{  
 > method: 'DELETE'  
