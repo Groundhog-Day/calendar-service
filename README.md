@@ -7,8 +7,8 @@ The server provide RESTful services with CRUD operations:
 **Endpoint**: `/api/v1/listings/:id/reservation`  
 This route allows to store new reservation into database.
 
-Request Object Example
-```javscript
+Request Option Example  
+```javascript
 {  
   method: 'POST',  
   username: 'hackreactor',  
@@ -33,7 +33,7 @@ Response Data Example
 **Endpoint**: `/api/v1/listings/:id`  
 This route returns data about accomodation, such as the accomodation host and the number of review.
 
-Object Format Example  
+Request Option Example  
 ```javascript
 {  
   method: 'GET'  
@@ -43,7 +43,7 @@ Object Format Example
 Response Data Example
 ```javascript
 {  
-  host: Jordan Spears,  
+  host: 'Jordan Spears',  
   joinDate: '120209',  
   address: '44 Tehama St, San Francisco, CA 94105',  
   bedroom: 2,  
@@ -65,9 +65,9 @@ Response Data Example
 
 Each digit of `amenities` and `houseRules` describes each category of amenities and general house rules. For instance, the first digit implies `true` for 'Wi-fi', but 4th digit implies `false` for private entrance. Elements with even indices in reservedDates array describe start date of reservation and elements with odd indices describe end date.
 
-With optional query strings `startDate`, `endDate`, `adults`, and `children`, the route returns price information about stay over from `startDate` to `endDate` for `adults` and `children` when all parameter hold valid values. Both `startDate` and `endDate` value should be in the form of 'DDMMYY', and the sum of `adults` and `children` should be less than or `maxGuests`.
+With optional query strings `startDate`, `endDate`, `adults`, and `children`, the route returns price information about stay over from `startDate` to `endDate` for `adults` and `children` when all parameter hold valid values. Both `startDate` and `endDate` value should be in the form of 'DDMMYY' like elements in `reservedDates` from above, and the sum of `adults` and `children` should be less than or `maxGuests`.
 
-Response Data of Query Example
+Response Data for Query Example
 ```javascript
 {  
  avgCostPerNight: 110,  
@@ -81,7 +81,7 @@ Response Data of Query Example
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
 This route updates reservation information associated with particular acoomodation.
 
-Request Object Example  
+Request Option Example  
 ```javascript
 {  
   method: 'PUT'  
@@ -95,13 +95,15 @@ Request Object Example
 }
 ```
 Response Data Example
+```javascript
 { }
+```
 
 #### Delete / DELETE
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
 This route deletes the reservation with id value `:id` from the database.
 
-Request Object Example
+Request Option Example  
 ```javascript
 {  
  method: 'DELETE'  
