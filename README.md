@@ -5,7 +5,7 @@ The server provide RESTful services with CRUD operations:
 
 #### Create / POST
 **Endpoint**: `/api/v1/listings/:id/reservation`  
-This route allows to store new reservation into database.
+This route allows to store new reservation into database and returns JSON object about reservation id.
 
 Request Option Example  
 ```javascript
@@ -31,7 +31,7 @@ Response Data Example
 
 #### Read / GET
 **Endpoint**: `/api/v1/listings/:id`  
-This route returns data about accomodation, such as the accomodation host and the number of review.
+This route returns JSON object that holds information about accomodation, such as the accomodation host and the number of review.
 
 Request Option Example  
 ```javascript
@@ -65,7 +65,7 @@ Response Data Example
 
 Each digit of `amenities` and `houseRules` describes each category of amenities and general house rules. For instance, the first digit implies `true` for 'Wi-fi', but 4th digit implies `false` for private entrance. Elements with even indices in reservedDates array describe start date of reservation and elements with odd indices describe end date.
 
-With optional query strings `startDate`, `endDate`, `adults`, and `children`, the route returns price information about stay over from `startDate` to `endDate` for `adults` and `children` when all parameter hold valid values. Both `startDate` and `endDate` value should be in the form of 'DDMMYY' like elements in `reservedDates` from above, and the sum of `adults` and `children` should be less than or `maxGuests`.
+With optional query strings `startDate`, `endDate`, `adults`, and `children`, the route returns JSON object of price information about stay over from `startDate` to `endDate` for `adults` and `children` when all parameter hold valid values. Both `startDate` and `endDate` value should be in the form of 'DDMMYY' like elements in `reservedDates` from above, and the sum of `adults` and `children` should be less than or `maxGuests`.
 
 Response Data for Query Example
 ```javascript
