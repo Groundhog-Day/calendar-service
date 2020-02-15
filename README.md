@@ -4,99 +4,112 @@
 The server provide RESTful services with CRUD operations:
 
 #### Create / POST
-**Endpoint**: `/api/v1/listings/:id/reservation/:startDate-:endDate`  
+**Endpoint**: `/api/v1/listings/:id/reservation`  
 This route allows to store new reservation into database.
 
-Expected Request Object Format
->{  
-> method: 'POST',  
-> username: String,  
-> paid: Boolean,  
-> numAdults: Number,  
-> numChildren: Number,  
-> numInfants: Number,  
->}
+Request Object Example
+```javscript
+{  
+  method: 'POST',  
+  username: 'hackreactor',  
+  startDate: '021520',  
+  endDate: '021720',  
+  adults: 2,  
+  children: 0,  
+  infants: 1,  
+  paid: false,  
+}
+```
 
-Expected Response Data Format
->{  
-> reservationID: Number,
->}
+Response Data Example
+```javascript
+{  
+  reservationID: 1  
+}
+```
 
 
 #### Read / GET
-**Endpoint**: `/api/v1/listings/:id/`  
-This route returns data about accomodation, such as price per night and the number of review.
+**Endpoint**: `/api/v1/listings/:id`  
+This route returns data about accomodation, such as the accomodation host and the number of review.
 
-Expected Request Object Format  
->{  
-> method: 'GET'  
->}
+Object Format Example  
+```javascript
+{  
+  method: 'GET'  
+}
+```
 
-Expected Response Data Format  
->{  
-> reviewsCount: Number,  
-> ratingScore: Number,  
-> maxGuests: Number,  
-> minDaysStay: Number,  
-> reservedDates: [ String, String, ... ]
->}  
-Even index elements are string about startDate and odd index elements are string about endDate of reservation. Both string are in the form of 'DDMMYY'
+Response Data Example
+```javascript
+{  
+  host: Jordan Spears,  
+  joinDate: '120209',  
+  address: '44 Tehama St, San Francisco, CA 94105',  
+  bedroom: 2,  
+  bed: 2,  
+  baths: 1,  
+  maxGuests: 3,
+  minDayStay: 1,  
+  checkInHour: 14:30,  
+  checkOutHour: 10:30,  
+  amenities: '11101111',  
+  houseRules: '001110',  
+  cancelationPolicy: 'Cancel up to 30 days before check-in and get a full refund.',  
+  reviewsCount: 412,  
+  ratingScore: 4.86,  
+  avgCostPerNight: 65,  
+  reservedDates: [ '022320', '022520', '030320', '030420' ]  
+}
+```
 
-**Endpoint**: `/api/v1/listings/:id/reservation/:startDate-:endDate`  
-This route returns price information about stay over from `:startDate` to `:endDate`. Both `:startDate` and `:endDate` should be in the form of 'DDMMYY'.
+Each digit of `amenities` and `houseRules` describes each category of amenities and general house rules. For instance, the first digit implies `true` for 'Wi-fi', but 4th digit implies `false` for private entrance. Elements with even indices in reservedDates array describe start date of reservation and elements with odd indices describe end date.
 
-Expected Request Object Format  
->{  
-> method: 'GET',  
-> numAdults: Number,  
-> numChildren: Number,  
-> numInfants: Number,  
->}
+With optional query strings `startDate`, `endDate`, `adults`, and `children`, the route returns price information about stay over from `startDate` to `endDate` for `adults` and `children` when all parameter hold valid values. Both `startDate` and `endDate` value should be in the form of 'DDMMYY', and the sum of `adults` and `children` should be less than or `maxGuests`.
 
-Expected Response Data Format
->{  
-> costPerNight: Number,  
-> cleaningFee: Number,
-> serviceFee: Number,
-> occupancyFee: Number
->}
+Response Data of Query Example
+```javascript
+{  
+ avgCostPerNight: 110,  
+ cleaningFee: 30,
+ serviceFee: 20,
+ occupancyFee: 20
+}
+```
 
 #### Update / PUT
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
 This route updates reservation information associated with particular acoomodation.
 
-Expected Request Object Format  
->{  
-> method: 'PUT'  
-> username: String,  
-> startDate: String,  
-> endDate: String,  
-> paid: Boolean,  
-> numAdults: Number,  
-> numChildren: Number,  
-> numInfants: Number,  
->}
-
-Expected Response Data Format
->{ }
+Request Object Example  
+```javascript
+{  
+  method: 'PUT'  
+  username: 'hackreactor',  
+  startDate: '030220',  
+  endDate: '030420',  
+  paid: false,  
+  adults: 2,  
+  children: 1,  
+  infants: 0,  
+}
+```
+Response Data Example
+{ }
 
 #### Delete / DELETE
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
 This route deletes the reservation with id value `:id` from the database.
 
-Expected Request Object Format
->{  
-> method: 'DELETE'  
-> username: String,  
->}
+Request Object Example
+```javascript
+{  
+ method: 'DELETE'  
+ username: hackreactor,  
+}
+```
 
 Expected Response Data Format
->{ }
-
-
-
-<!--   >
-  >provides general information about accomodation, such as price per night and the number of reviews, on page load
-  >
-  >Endpoint: 
- -->
+```javascript
+{ }
+```
