@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Checkout from './Checkout';
-import Calendar from './Calendar';
+import Checkout from './Checkout.jsx';
 
 export default function App() {
   const [accommodation, setAccommodation] = useState(null);
