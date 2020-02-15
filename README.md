@@ -79,7 +79,7 @@ Response Data for Query Example
 
 #### Update / PUT
 **Endpoint**: `/api/v1/listings/:id/reservation/:id`  
-This route updates reservation information associated with particular acoomodation.
+This route updates reservation information associated with particular accomodation.
 
 Request Option Example  
 ```javascript
