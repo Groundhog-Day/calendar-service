@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Calendar from './Calendar';
+import Calendar from './Calendar.jsx';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
