@@ -1,8 +1,91 @@
 const { Client } = require('pg');
 const client = new Client();
+const copyFrom = require('pg-copy-streams').from;
+
+const faker = require('faker');
 const fs = require('fs');
 const path = require('path');
 
+
+const gen1MUserData = (index, callback) => {
+  // create file and write header
+  const fileName = path.join(__dirname, `users${index}.csv`);
+  fs.writeFileSync(fileName, 'id, username, name, email, about, location, work\n');
+
+  // create variables needed to generate fake data
+  const dataLimit = (10 ** 6);
+  const stringLengthLimit = (2 ** 25);
+  let tempString = '';
+
+
+  for (let i = 0; i < dataLimit; i++) {
+    // generate fake data
+    let decider = Math.random();
+
+    let id = i;
+    let username = faker.internet.userName();
+    let name = faker.name.findName();
+    let email = faker.internet.email();
+    let about = (decider < 0.95) ? '""' : faker.lorem.sentence();
+
+    let location = (decider < 0.8) ? '""' : faker.fake("{{address.streetAddress}}, {{address.city}}, {{address.country}}");
+    location = location.replace(/,/g, '');
+
+    let work = (decider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
+    work = work.replace(/,/g, '');
+
+    // add generated fake data to temp string
+    tempString += `${id}, ${username}, ${name}, ${email}, ${about}, ${location}, ${work}\n`;
+
+    // append to the file at every 100K data generation
+    if ( i % (dataLimit / 10) === 99999) {
+      fs.appendFile(fileName, tempString, (err) => {
+        if(err) {
+          console.log(err);
+        } else {
+          tempString = '';
+
+          // copy to the database if the loop reached to the end, and delete the file
+          if(i === dataLimit - 1) {
+            let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV HEADER'));
+            let fileStream = fs.createReadStream(fileName);
+
+            fileStream.on('error', (err) => console.log('Error in Reading: ', err));
+            stream.on('error', (err) => console.log('Error in Copying: ', err));
+            stream.on('end', () => {
+              fs.unlink(fileName, (err) => {
+                if (err) throw err;
+                callback();
+              });
+            });
+            fileStream.pipe(stream);      
+          }
+        }
+      });
+    }
+  }
+}
+
+let user1M = 0;
+let userDataMax = 10; // generate 1M * 24 = 24M data
+
+client.connect();
+
+for(let i=0; i<userDataMax; i++) {
+  gen1MUserData(i, () => {
+    user1M++;
+    if (user1M === userDataMax) {
+      console.log('Done Copying');
+      client.end();
+    }
+  });
+}
+
+
+
+
+
+ /* PRIMARY DATA: Accomodation
 const writeTo = path.join(__dirname, 'accomodation.csv');
 fs.writeFileSync(writeTo, 'host, joinDate, address, city, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningee, occupancyTax\n');
 
@@ -11,21 +94,6 @@ fs.appendFile(writeTo, `asdf, 123119, 44 Tehma Street, San Francisco, 2, 2, 1, 4
       console.log(err);
     }
 });
-
-client
-  .query(`copy accomodation from '/Users/AlbertKim/Documents/GitHub/HackReactor/senior/SDC/calendar-service/db/psql/accomodation.csv' delimiter ',' CSV HEADER`)
-  .then(() => client.end());
-
-
-/*
-for (let i=0; i<numData; i++) {
-  fs.appendFile(writeTo, `index, ${i}\n`, (err) => { 
-    if(err) {
-      console.log(err);
-      console.log(i);
-    }
-  });
-}
 
 let host = ;
 let joinDate = ;
