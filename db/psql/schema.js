@@ -4,10 +4,7 @@ const client = new Client();
 client.connect();
 
 // drop all tables initally
-client.query('DROP TABLE IF EXISTS users CASCADE')
-  .then(() => (
-    client.query('DROP TABLE IF EXISTS accomodations CASCADE')
-  ))
+client.query('DROP TABLE IF EXISTS accomodations CASCADE')
   .then(() => (
     client.query('DROP TABLE IF EXISTS reservations CASCADE')
   ))
@@ -19,17 +16,6 @@ client.query('DROP TABLE IF EXISTS users CASCADE')
     console.error(e);
     client.end();
   })
-  .then( () => (   // create all tables
-    client.query(
-      `CREATE TABLE users (
-        id INTEGER NOT NULL,
-        username VARCHAR(100),
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(50) NOT NULL,
-        about VARCHAR(150),
-        location VARCHAR(100),
-        work VARCHAR(100)
-      )`)))
   .then( () => (
     client.query(`CREATE TABLE accomodations (
           id INTEGER,

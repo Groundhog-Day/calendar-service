@@ -18,7 +18,7 @@ const gen100kUserData = (index, callback) => {
   let tempString = '';
 
 
-  for (let i = 0; i < dataLimit; i++) {
+  for (let i = (index * dataLimit 0); i < (index+1) * dataLimit; i++) {
     // generate fake data
     let decider = Math.random();
 
@@ -84,18 +84,39 @@ const gen1MUserData = (callback) => {
 
 
 let countMillion = 0;
+let generateUpTo = 24;
 
-const callbackFor24M = () => {
+const cbToReinvoke = () => {
   countMillion++;
-  if (countMillion !== 24) {
-    gen1MUserData(callbackFor24M);
+  if (countMillion !== generateUpTo) {
+    gen1MUserData(cbToReinvoke);
   } else {
     client.end();
   }
 }
 
 client.connect();
-gen1MUserData(callbackFor24M);
+
+client.query('DROP TABLE IF EXISTS users CASCADE')
+  .then( () => (   // create all tables
+    client.query(
+      `CREATE TABLE users (
+        id INTEGER NOT NULL,
+        username VARCHAR(100),
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(50) NOT NULL,
+        about VARCHAR(150),
+        location VARCHAR(100),
+        work VARCHAR(100)
+      )`)))
+  .catch( (e) => {
+    console.log('error in dropping or creating users tables');
+    console.error(e);
+    client.end();
+  })
+  .then( () => {
+    gen1MUserData(cbToReinvoke);    
+  }
 
  /* PRIMARY DATA: Accomodation
 const writeTo = path.join(__dirname, 'accomodation.csv');
