@@ -11,56 +11,51 @@ const path = require('path');
 /*  
   START: Declare Helper Functions
 */
-const generate100k = (ind1, ind2, callback) => {
+const generate50k = (ind1, ind2, callback) => {
   // create a file and write header
   const fileName = path.join(__dirname, `accomodations${ind2}.csv`);
-  fs.writeFileSync(fileName, 'host, joinDate, address, city, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningee, occupancyTax\n');
+  fs.writeFileSync(fileName, 'id,hostUser,address,bedroom,bed,baths,maxGuests,minDaysStay,checkInHour,checkOutHour,amenities,houseRules,cancelationPolicy,reviewCount,ratingScore,minCostPerNight,maxCostPerNight,serviceFee,cleaningee,occupancyTax\n');
 
   // create variables needed to generate fake data and write into csv file
-  const dataLimit = (10 ** 5);          // 100k
+  const dataLimit = 5 * (10 ** 4);      // 50k
   const stringLengthLimit = (2 ** 25);  // MDN says different browser has different length limit, and the minimum is (2 ** 27 - 1)
   let tempString = '';
 
 
   for (let i = 0; i < dataLimit; i++) {
     // generate fake data
-    /**********************************************************************************
-    CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
+    let id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // #500k + #50k + rest of digits;
 
-    let host = ;
-    let joinDate = ;
-    const randNum = Math.random;
+    let hostUser = Math.ceil(Math.random() * 24 * (10 * 6));
+
     let address = faker.address.streetAddress();
-    let city = faker.address.county;
-    let bedroom = randNum < 0.6 ? 1 : randNum < 0.8 ? 2 : randNum < 0.95 ? 3 : 4;
-    let bed ;
-    let baths = randNum < 0.95 ? 1 : 2;
-    let maxGuests = bed + (randNum < 0.25 ? 1 : ;
-    let minDaysStay = randNum < 0;
-    let checkInHour;
-    let checkOutHour;
-    let amenities = Math.floor(randNum * 256).toString(2);
-    let houseRules;
-    let cancelationPolicy;
-    let reviewCount;
-    let ratingScore;
-    let minCostPerNight;
-    let maxCostPerNight;
-    let serviceFee;
-    let cleaningee;
-    let occupancyTax;
+    address = address.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
-    CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
-    **********************************************************************************/
+    let randNum = Math.random();
+    let bedroom = randNum < 0.6 ? 1 : randNum < 0.8 ? 2 : 3;
+    let bed = Math.random < 0.90 ? bedroom : bedroom + 1;
+    let baths = randNum < 0.70 ? 1.0 : randNum < 0.9 ? 1.5 : 2.0;
+    let maxGuests = bed * (randNum < 0.3 ? 1 : 2);
 
-    /**********************************************************************************
-    CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
-      // add generated fake data to temp string
-      tempString += ``;
+    let minDaysStay = Math.random() < 0.9 ? 1 : 2;
+    let checkInHour = ['02:00 PM', '02:30 PM', '03:30 PM'][Math.floor(Math.random() * 3)];
+    let checkOutHour = ['10:00 AM', '10:30 AM', '11:00 AM'][Math.floor(Math.random() * 3)];;
+    let amenities = (Math.floor(Math.random() * 256).toString(2)).padStart(8, '0');
+    let houseRules = (Math.floor(Math.random() * 256).toString(2)).padStart(8, '0');
+    let cancelationPolicy = faker.lorem.sentence() + (Math.random() < 0.7 ? '': ' ' + faker.lorem.sentence());
+
+    let reviewCount = 70 + Math.ceil(Math.random() * 350);
+    let ratingScore = parseFloat((3 + Math.random() * 2).toFixed(2));
+
+    let minCostPerNight = 100;
+    let maxCostPerNight = 100;
+    let serviceFee = [25, 29, 39][Math.floor(Math.random() * 3)];
+    let cleaningee = [29, 39, 49][Math.floor(Math.random() * 3)];
+    let occupancyTax = Math.ceil(Math.random() * 100);
 
 
-    CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
-    **********************************************************************************/
+    // add generated fake data to temp string
+    tempString += `${id},${hostUser},${address},${bedroom},${bed},${baths},${maxGuests},${minDaysStay},${checkInHour},${checkOutHour},${amenities},${houseRules},${cancelationPolicy},${reviewCount},${ratingScore},${minCostPerNight},${maxCostPerNight},${serviceFee},${cleaningee},${occupancyTax}\n`;
 
     // if either temp string is too long or the loop reached to the end, append to the file
     if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
@@ -96,12 +91,12 @@ const generate100k = (ind1, ind2, callback) => {
 }
 
 
-const generate1M = (ind1, callback) => {
+const generate500k = (ind1, callback) => {
   let bound = 10;
   let count = 0;
 
   for(let ind2 = 0; ind2 < bound; ind2++) {
-    generate100k(ind1, ind2, () => {
+    generate50k(ind1, ind2, () => {
       count++;
       if (count === 10) {
         callback();
@@ -112,18 +107,12 @@ const generate1M = (ind1, callback) => {
 
 
 let countMillion = 0; // tracks how many data in million are generated
-/**********************************************************************************
-CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
+let generateUpTo = 20; // decides the upper limit of how many data in million are generated
 
-let generateUpTo = 10; // decides the upper limit of how many data in million are generated
-
-CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS CHANGE THIS
-**********************************************************************************/
-
-const reinvokeGen1M = () => {
+const reinvokeGen500k = () => {
   countMillion++;
   if (countMillion !== generateUpTo) {
-    generate1M(countMillion, reinvokeGen1M);
+    generate500k(countMillion, reinvokeGen500k);
   } else {
     client.end();
   }
@@ -133,6 +122,7 @@ const reinvokeGen1M = () => {
 */
 
 
+
 client.connect(); // connect to psql server
 
 client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to delete all previously save data
@@ -140,9 +130,7 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
     client.query(`CREATE TABLE accomodations (
       id INTEGER,
       hostUser INTEGER,
-      joinDate CHAR(6),
       address VARCHAR(50),
-      city VARCHAR(30),
       bedroom SMALLINT,
       bed SMALLINT,
       baths numeric(2,1),
@@ -152,7 +140,7 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
       checkOutHour CHAR(8),
       amenities bit(8),
       houseRules bit(8),
-      cancelationPolicy VARCHAR(100),
+      cancelationPolicy VARCHAR(300),
       reviewCount SMALLINT,
       ratingScore numeric(2,1),
       minCostPerNight SMALLINT,
@@ -167,5 +155,5 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
     client.end();
   })
   .then( () => {
-    generate1M(countMillion, reinvokeGen1M);    
+    generate500k(countMillion, reinvokeGen500k);    
   });
