@@ -7,13 +7,13 @@ const fs = require('fs');
 const path = require('path');
 
 
-const gen1MUserData = (index, callback) => {
+const gen100kUserData = (index, callback) => {
   // create file and write header
   const fileName = path.join(__dirname, `users${index}.csv`);
   fs.writeFileSync(fileName, 'id, username, name, email, about, location, work\n');
 
   // create variables needed to generate fake data
-  const dataLimit = (10 ** 6);
+  const dataLimit = (10 ** 5);
   const stringLengthLimit = (2 ** 25);
   let tempString = '';
 
@@ -37,53 +37,65 @@ const gen1MUserData = (index, callback) => {
     // add generated fake data to temp string
     tempString += `${id}, ${username}, ${name}, ${email}, ${about}, ${location}, ${work}\n`;
 
-    // append to the file at every 100K data generation
-    if ( i % (dataLimit / 10) === 99999) {
+    // if either temp string is too long or the loop reached to the end, append to the file
+    if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
       fs.appendFile(fileName, tempString, (err) => {
         if(err) {
           console.log(err);
         } else {
           tempString = '';
-
-          // copy to the database if the loop reached to the end, and delete the file
-          if(i === dataLimit - 1) {
-            let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV HEADER'));
-            let fileStream = fs.createReadStream(fileName);
-
-            fileStream.on('error', (err) => console.log('Error in Reading: ', err));
-            stream.on('error', (err) => console.log('Error in Copying: ', err));
-            stream.on('end', () => {
-              fs.unlink(fileName, (err) => {
-                if (err) throw err;
-                callback();
-              });
-            });
-            fileStream.pipe(stream);      
-          }
         }
       });
+    }
+
+    // copy to the database if the loop reached to the end, and delete the file
+    if(i === dataLimit - 1) {
+      let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV HEADER'));
+      let fileStream = fs.createReadStream(fileName);
+
+      fileStream.on('error', (err) => console.log('Error in Reading: ', err));
+      stream.on('error', (err) => console.log('Error in Copying: ', err));
+      stream.on('end', () => {
+        fs.unlink(fileName, (err) => {
+          if (err) throw err;
+          callback();
+        });
+      });
+      fileStream.pipe(stream);
+
+      
     }
   }
 }
 
-let user1M = 0;
-let userDataMax = 10; // generate 1M * 24 = 24M data
+const gen1MUserData = (callback) => {
+  let bound = 10;
+  let count = 0;
 
-client.connect();
-
-for(let i=0; i<userDataMax; i++) {
-  gen1MUserData(i, () => {
-    user1M++;
-    if (user1M === userDataMax) {
-      console.log('Done Copying');
-      client.end();
-    }
-  });
+  for(let i = 0; i < bound; i++) {
+    gen100kUserData(i, () => {
+      count++;
+      if (count === 10) {
+        callback();
+      }
+    });
+  }
 }
 
 
+let countMillion = 0;
 
+const callbackFor24M = () => {
+  countMillion++;
+  if (countMillion !== 24) {
+    gen1MUserData(callbackFor24M);
+  } else {
+    client.end();
+  }
+}
 
+client.connect();
+gen1MUserData(callbackFor24M);
 
  /* PRIMARY DATA: Accomodation
 const writeTo = path.join(__dirname, 'accomodation.csv');
