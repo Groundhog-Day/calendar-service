@@ -137,16 +137,30 @@ client.connect(); // connect to psql server
 
 client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to delete all previously save data
   .then( () => (   // create table again without constraints (constraints are neglected to use 'copy' method)
-    client.query(
-      `CREATE TABLE users (
-        id INTEGER NOT NULL,
-        username VARCHAR(100),
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(50) NOT NULL,
-        about VARCHAR(150),
-        location VARCHAR(100),
-        work VARCHAR(100)
-      )`)))
+    client.query(`CREATE TABLE accomodations (
+      id INTEGER,
+      hostUser INTEGER,
+      joinDate CHAR(6),
+      address VARCHAR(50),
+      city VARCHAR(30),
+      bedroom SMALLINT,
+      bed SMALLINT,
+      baths numeric(2,1),
+      maxGuests SMALLINT,
+      minDaysStay SMALLINT,
+      checkInHour CHAR(8),
+      checkOutHour CHAR(8),
+      amenities bit(8),
+      houseRules bit(8),
+      cancelationPolicy VARCHAR(100),
+      reviewCount SMALLINT,
+      ratingScore numeric(2,1),
+      minCostPerNight SMALLINT,
+      maxCostPerNight SMALLINT,
+      serviceFee SMALLINT,
+      cleaningee SMALLINT,
+      occupancyTax SMALLINT
+    )`)))
   .catch( (e) => {
     console.log('error in dropping or creating accomodations tables');
     console.error(e);
@@ -155,8 +169,3 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
   .then( () => {
     generate1M(countMillion, reinvokeGen1M);    
   });
-
-
-/* PRIMARY DATA: Accomodation
-
-*/
