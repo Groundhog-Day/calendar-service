@@ -47,8 +47,8 @@ const generate50k = (ind1, ind2, callback) => {
     let reviewCount = 70 + Math.ceil(Math.random() * 350);
     let ratingScore = parseFloat((3 + Math.random() * 2).toFixed(2));
 
-    let minCostPerNight = 100;
-    let maxCostPerNight = 100;
+    let minCostPerNight = [80, 85, 89, 90, 95, 99, 100, 105, 109, 109, 110][Math.floor(Math.random() * 10)];
+    let maxCostPerNight = minCostPerNight + (Math.random() < 0.5 ? 25 : 30);
     let serviceFee = [25, 29, 39][Math.floor(Math.random() * 3)];
     let cleaningee = [29, 39, 49][Math.floor(Math.random() * 3)];
     let occupancyTax = Math.ceil(Math.random() * 100);
