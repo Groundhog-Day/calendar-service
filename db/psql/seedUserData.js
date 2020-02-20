@@ -14,7 +14,7 @@ const path = require('path');
 const generate100k = (ind1, ind2, callback) => {
   // create a file and write header
   const fileName = path.join(__dirname, `users${ind2}.csv`);
-  fs.writeFileSync(fileName, 'id, username, name, email, about, location, work\n');
+  fs.writeFileSync(fileName, 'id,username,name,email,about,location,work\n');
 
   // create variables needed to generate fake data and write into csv file
   const dataLimit = (10 ** 5);          // 100k
@@ -32,7 +32,7 @@ const generate100k = (ind1, ind2, callback) => {
     let email = faker.internet.email();
     let about = (decider < 0.95) ? '""' : faker.lorem.sentence();
 
-    let location = (decider < 0.8) ? '""' : faker.fake("{{address.streetAddress}}, {{address.city}}, {{address.country}}");
+    let location = (decider < 0.8) ? '""' : faker.fake("{{address.streetAddress}} {{address.city}} {{address.country}}");
     location = location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
     let work = (decider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
@@ -40,7 +40,7 @@ const generate100k = (ind1, ind2, callback) => {
 
 
     // add generated fake data to temp string
-    tempString += `${id}, ${username}, ${name}, ${email}, ${about}, ${location}, ${work}\n`;
+    tempString += `${id},${username},${name},${email},${about},${location},${work}\n`;
 
 
     // if either temp string is too long or the loop reached to the end, append to the file
