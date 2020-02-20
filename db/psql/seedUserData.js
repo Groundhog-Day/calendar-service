@@ -26,7 +26,7 @@ const generate100k = (ind1, ind2, callback) => {
     // generate fake data
     let decider = Math.random(); // decide whether to have data for some attributes
 
-    let id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // M digit + 100k digit + rest of digits
+    let id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // 1M digit + 100k digit + rest of digits
     let username = faker.internet.userName();
     let name = faker.name.findName();
     let email = faker.internet.email();
