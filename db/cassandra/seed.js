@@ -17,9 +17,9 @@ const createTableQuery =
     address ASCII PRIMARY KEY,
     bedroom TINYINT,
     bed TINYINT,
-    baths TINYINT,
+    baths float,
     maxGuests TINYINT,
-    minDayStaty TINYINT,
+    minDaysStay TINYINT,
     checkInHour TIME, 
     checkOutHour TIME,
     amenities TEXT,
@@ -37,7 +37,7 @@ const createTableQuery =
     maxCostPerNight TINYINT,
     serviceFee TINYINT,
     cleaningFee TINYINT,
-    occupancyTax TINYINT,
+    occupancyTax FLOAT,
     client_username TEXT,
     startDate DATE,
     endDate DATE,
@@ -47,7 +47,7 @@ const createTableQuery =
     paid BOOLEAN
   )`;
 
-const copyQeury = 'COPY '
+const copyQeury = 'COPY calendar FROM ? WITH DELIMITER "," AND HEADER=TRUE'
 
 /*  
   START: Declare Helper Functions
@@ -55,9 +55,9 @@ const copyQeury = 'COPY '
 const generate10k = (ind1, ind2, callback) => {
   // create a file and write header
   const fileName = path.join(__dirname, `cql${ind2}.csv`);
-  fs.writeFileSync(fileName, 'id,address,bedroom,bed,baths,maxGuests,minDayStaty,checkInHour,checkOutHour,amenities,houseRules,cancelationPolicy,host_username,host_name,host_email,host_about,host_location,host_work,reviewCount,ratingScore,minCostPerNight,maxCostPerNight,serviceFee,cleaningFee,occupancyTax,client_username,startDate,endDate,adults,children,infants,paid\n');
+  fs.writeFileSync(fileName, 'address,adults,amenities,baths,bed,bedroom,cancelationPolicy,checkInHour,checkOutHour,children,cleaningFee,client_username,endDate,host_about,host_email,host_location,host_name,host_username,host_work,houseRules,id,infants,maxCostPerNight,maxGuests,minCostPerNight,minDaysStay,occupancyTax,paid,ratingScore,reviewCount,serviceFee,startDate\n');
   // create variables needed to generate fake data and write into csv file
-  const dataLimit = 1;
+  const dataLimit = 20;
   // const dataLimit = (10 ** 4);       // 10k
   const stringLengthLimit = (2 ** 25);  // MDN says different browser has different length limit, and the minimum is (2 ** 27 - 1)
   let tempString = '';
@@ -65,20 +65,26 @@ const generate10k = (ind1, ind2, callback) => {
 
   for (let i = 0; i < dataLimit; i++) {
     // declare variables that will be stored in the db
-    let id, address, bedroom, bed, baths, maxGuests, minDayStaty, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
+    let id, address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
+    client_username = null;
+    startDate = null;
+    endDate = null;
+    adults = 0;
+    children = 0;
+    infants = 0;
+    paid = null;
 
 
     // generate fake data
     id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // 10k digit + 1k digit + rest of digits;
 
-
-client_username;
-startDate;
-endDate;
-adults;
-children;
-infants;
-paid;
+// client_username;
+// startDate;
+// endDate;
+// adults;
+// children;
+// infants;
+// paid;
 
     address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
@@ -89,8 +95,8 @@ paid;
     maxGuests = bed * (randNum < 0.3 ? 1 : 2);
 
     minDaysStay = Math.random() < 0.9 ? 1 : 2;
-    checkInHour = ['02:00 PM', '02:30 PM', '03:30 PM'][Math.floor(Math.random() * 3)];
-    checkOutHour = ['10:00 AM', '10:30 AM', '11:00 AM'][Math.floor(Math.random() * 3)];;
+    checkInHour = ['14:00:00', '14:30:00', '15:30:00'][Math.floor(Math.random() * 3)];
+    checkOutHour = ['10:00:00', '10:30:00', '11:00:00'][Math.floor(Math.random() * 3)];;
     amenities = (Math.floor(Math.random() * 256).toString(2)).padStart(8, '0');
     houseRules = (Math.floor(Math.random() * 256).toString(2)).padStart(8, '0');
     cancelationPolicy = faker.lorem.sentence() + (Math.random() < 0.7 ? '': ' ' + faker.lorem.sentence());
@@ -102,7 +108,7 @@ paid;
     maxCostPerNight = minCostPerNight + (Math.random() < 0.5 ? 25 : 30);
     serviceFee = [25, 29, 39][Math.floor(Math.random() * 3)];
     cleaningFee = [29, 39, 49][Math.floor(Math.random() * 3)];
-    occupancyTax = Math.ceil(Math.random() * 100);    
+    occupancyTax = 5 + Math.ceil(Math.random()*7) + (Math.random() < 0.8 ? 0 : 0.5);
 
     let decider = Math.random(); // decide whether to have data for some attributes
     host_username = faker.internet.userName();
@@ -123,7 +129,7 @@ paid;
     */
 
     // add generated fake data to temp string
-    tempString += `${id},${address},${bedroom},${bed},${baths},${maxGuests},${minDayStaty},${checkInHour},${checkOutHour},${amenities},${houseRules},${cancelationPolicy},${host_username},${host_name},${host_email},${host_about},${host_location},${host_work},${reviewCount},${ratingScore},${minCostPerNight},${maxCostPerNight},${serviceFee},${cleaningFee},${occupancyTax},${client_username},${startDate},${endDate},${adults},${children},${infants},${paid}\n`;
+    tempString += `${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${id},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
 
     // if either temp string is too long or the loop reached to the end, append to the file
     if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
