@@ -51,8 +51,7 @@ const generate50k = (ind1, ind2, callback) => {
     let maxCostPerNight = minCostPerNight + (Math.random() < 0.5 ? 25 : 30);
     let serviceFee = [25, 29, 39][Math.floor(Math.random() * 3)];
     let cleaningFee = [29, 39, 49][Math.floor(Math.random() * 3)];
-    let occupancyTax = Math.ceil(Math.random() * 100);
-
+    let occupancyTax = 5 + Math.ceil(Math.random()*7) + (Math.random() < 0.8 ? 0 : 0.5);
 
     // add generated fake data to temp string
     tempString += `${id},${hostUser},${address},${bedroom},${bed},${baths},${maxGuests},${minDaysStay},${checkInHour},${checkOutHour},${amenities},${houseRules},${cancelationPolicy},${reviewCount},${ratingScore},${minCostPerNight},${maxCostPerNight},${serviceFee},${cleaningFee},${occupancyTax}\n`;
@@ -136,18 +135,18 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
       baths numeric(2,1),
       maxGuests SMALLINT,
       minDaysStay SMALLINT,
-      checkInHour CHAR(8),
-      checkOutHour CHAR(8),
+      checkInHour TIME,
+      checkOutHour TIME,
       amenities bit(8),
       houseRules bit(8),
       cancelationPolicy VARCHAR(300),
       reviewCount SMALLINT,
-      ratingScore numeric(2,1),
+      ratingScore numeric(3,2),
       minCostPerNight SMALLINT,
       maxCostPerNight SMALLINT,
       serviceFee SMALLINT,
       cleaningFee SMALLINT,
-      occupancyTax SMALLINT
+      occupancyTax numeric(3,1)
     )`)))
   .catch( (e) => {
     console.log('error in dropping or creating accomodations tables');
