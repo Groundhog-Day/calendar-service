@@ -14,7 +14,7 @@ const path = require('path');
 const generate50k = (ind1, ind2, callback) => {
   // create a file and write header
   const fileName = path.join(__dirname, `accomodations${ind2}.csv`);
-  fs.writeFileSync(fileName, 'id,hostUser,address,bedroom,bed,baths,maxGuests,minDaysStay,checkInHour,checkOutHour,amenities,houseRules,cancelationPolicy,reviewCount,ratingScore,minCostPerNight,maxCostPerNight,serviceFee,cleaningee,occupancyTax\n');
+  fs.writeFileSync(fileName, 'id,hostUser,address,bedroom,bed,baths,maxGuests,minDaysStay,checkInHour,checkOutHour,amenities,houseRules,cancelationPolicy,reviewCount,ratingScore,minCostPerNight,maxCostPerNight,serviceFee,cleaningFee,occupancyTax\n');
 
   // create variables needed to generate fake data and write into csv file
   const dataLimit = 5 * (10 ** 4);      // 50k
@@ -50,12 +50,12 @@ const generate50k = (ind1, ind2, callback) => {
     let minCostPerNight = [80, 85, 89, 90, 95, 99, 100, 105, 109, 109, 110][Math.floor(Math.random() * 10)];
     let maxCostPerNight = minCostPerNight + (Math.random() < 0.5 ? 25 : 30);
     let serviceFee = [25, 29, 39][Math.floor(Math.random() * 3)];
-    let cleaningee = [29, 39, 49][Math.floor(Math.random() * 3)];
+    let cleaningFee = [29, 39, 49][Math.floor(Math.random() * 3)];
     let occupancyTax = Math.ceil(Math.random() * 100);
 
 
     // add generated fake data to temp string
-    tempString += `${id},${hostUser},${address},${bedroom},${bed},${baths},${maxGuests},${minDaysStay},${checkInHour},${checkOutHour},${amenities},${houseRules},${cancelationPolicy},${reviewCount},${ratingScore},${minCostPerNight},${maxCostPerNight},${serviceFee},${cleaningee},${occupancyTax}\n`;
+    tempString += `${id},${hostUser},${address},${bedroom},${bed},${baths},${maxGuests},${minDaysStay},${checkInHour},${checkOutHour},${amenities},${houseRules},${cancelationPolicy},${reviewCount},${ratingScore},${minCostPerNight},${maxCostPerNight},${serviceFee},${cleaningFee},${occupancyTax}\n`;
 
     // if either temp string is too long or the loop reached to the end, append to the file
     if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
@@ -146,7 +146,7 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
       minCostPerNight SMALLINT,
       maxCostPerNight SMALLINT,
       serviceFee SMALLINT,
-      cleaningee SMALLINT,
+      cleaningFee SMALLINT,
       occupancyTax SMALLINT
     )`)))
   .catch( (e) => {
