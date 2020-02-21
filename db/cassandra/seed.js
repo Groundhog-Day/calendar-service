@@ -47,7 +47,7 @@ const createTableQuery =
     paid BOOLEAN
   )`;
 
-const copyQeury = 'COPY calendar FROM ? WITH DELIMITER "," AND HEADER=TRUE'
+const copyQeury = 'COPY calendar FROM ? WITH DELIMITER "|" AND HEADER=TRUE'
 
 /*  
   START: Declare Helper Functions
@@ -86,7 +86,8 @@ const generate10k = (ind1, ind2, callback) => {
 // infants;
 // paid;
 
-    address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    // address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    address = faker.address.streetAddress() // cannot escape , somehow so just delete commas
 
     randNum = Math.random();
     bedroom = randNum < 0.6 ? 1 : randNum < 0.8 ? 2 : 3;
@@ -110,26 +111,53 @@ const generate10k = (ind1, ind2, callback) => {
     cleaningFee = [29, 39, 49][Math.floor(Math.random() * 3)];
     occupancyTax = 5 + Math.ceil(Math.random()*7) + (Math.random() < 0.8 ? 0 : 0.5);
 
-    let decider = Math.random(); // decide whether to have data for some attributes
+    let hostInfDecider = Math.random(); // decide whether to have data for some attributes
     host_username = faker.internet.userName();
     host_name = faker.name.findName();
     host_email = faker.internet.email();
-    host_about = (decider < 0.95) ? '""' : faker.lorem.sentence();
+    host_about = (hostInfDecider < 0.95) ? '""' : faker.lorem.sentence();
 
-    host_location = (decider < 0.8) ? '""' : faker.fake("{{address.streetAddress}}, {{address.city}}, {{address.country}}");
+    host_location = (hostInfDecider < 0.8) ? '""' : faker.fake("{{address.streetAddress}}, {{address.city}}, {{address.country}}");
     host_location = host_location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
-    host_work = (decider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
+    host_work = (hostInfDecider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
     host_work = host_work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
-    /*
-    if (Math.random() > 0.7) {
-      
-    }
-    */
+    let numReservations = Math.floor(Math.random() * 12);
+    if(numReservations > 0) {
+      let dateTracker = new Date();
 
-    // add generated fake data to temp string
-    tempString += `${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${id},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
+      for (let j=0; j < numReservations; j++) {
+        let client_username = faker.internet.userName();
+
+        // generate random startDate
+        if(j === 0) { // have start date of first reservation within a week from today
+          dateTracker.setDate(dateTracker.getDate() + Math.floor(Math.random() * 8));
+        } else {      // have start date of second or later reservation within four days from first reservation
+          dateTracker.setDate(dateTracker.getDate() + Math.floor(Math.random() * 5));
+        }
+        //parse startDate into psql's recommended date format
+        startDate = `${dateTracker.getFullYear()}-${(dateTracker.getMonth()+1).toString().padStart(2, '0')}-${dateTracker.getDate()}`;
+
+        // generate random endDate and parse
+        dateTracker.setDate(dateTracker.getDate() + 1 + Math.floor(Math.random() * 3));
+        endDate = `${dateTracker.getFullYear()}-${(dateTracker.getMonth()+1).toString().padStart(2, '0')}-${dateTracker.getDate()}`;
+
+        // generate random number for group member
+        adults = 1 + Math.floor(Math.random() * 3);
+        children = Math.floor(Math.random() * 4);
+        infants = Math.floor(Math.random() * 3);
+
+        // generate random boolean for paying the boolean
+        paid = (Math.random() < 0.8);
+
+        // add generated fake data to temp string
+        tempString += `${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${id}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}|${startDate}\n`;
+      }
+    } else {
+      tempString += `${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${id}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}|${startDate}\n`;
+    }
+
 
     // if either temp string is too long or the loop reached to the end, append to the file
     if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
@@ -144,8 +172,7 @@ const generate10k = (ind1, ind2, callback) => {
 
     // copy to the database if the data generation loop reached to the end
     if(i === dataLimit - 1) {
-      // initiate pg-copy-stream
-
+      client.execute(copyQeury);
     }
   }
 }
@@ -174,7 +201,7 @@ const reinvokeGen100k = () => {
   if (countMillion !== generateUpTo) {
     generate100k(countMillion, reinvokeGen100k);
   } else {
-    client.end();
+    client.shutdown();
   }
 }
 /*  
@@ -182,7 +209,7 @@ const reinvokeGen100k = () => {
 */
 
 generate100k(countMillion, reinvokeGen100k);
-/*
+
 client.execute(dropTableQuery)
   .then(() => ( client.execute(createTableQuery) ))
   .then((result) => {
@@ -193,4 +220,4 @@ client.execute(dropTableQuery)
     console.log(err);
     client.shutdown();
   })
-*/
+
