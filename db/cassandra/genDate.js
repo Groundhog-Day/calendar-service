@@ -1,71 +1,29 @@
-const cassandra = require('cassandra-driver');
+//  COPY QUERY
+// COPY calendar (id,id2) FROM '/Users/AlbertKim/Documents/GitHub/HackReactor/senior/SDC/calendar-service/db/cassandra/cql0.csv' WITH DELIMITER=',' AND HEADER=TRUE;
 
 const faker = require('faker');
 const path = require('path');
 const fs = require('fs');
- 
-const client = new cassandra.Client({
-  contactPoints: ['127.0.0.1:9042'],
-  localDataCenter: 'datacenter1',
-  keyspace: 'sdc'
-});
- 
-const dropTableQuery = 'DROP TABLE IF EXISTS calendar'
-const createTableQuery =
-  `CREATE TABLE calendar (
-    id int,
-    address ASCII PRIMARY KEY,
-    bedroom TINYINT,
-    bed TINYINT,
-    baths float,
-    maxGuests TINYINT,
-    minDaysStay TINYINT,
-    checkInHour TIME, 
-    checkOutHour TIME,
-    amenities TEXT,
-    houseRules TEXT,
-    cancelationPolicy ASCII,
-    host_username TEXT,
-    host_name TEXT,
-    host_email TEXT,
-    host_about ASCII,
-    host_location ASCII,
-    host_work TEXT,
-    reviewCount SMALLINT,
-    ratingScore FLOAT,
-    minCostPerNight TINYINT,
-    maxCostPerNight TINYINT,
-    serviceFee TINYINT,
-    cleaningFee TINYINT,
-    occupancyTax FLOAT,
-    client_username TEXT,
-    startDate DATE,
-    endDate DATE,
-    adults TINYINT,
-    children TINYINT,
-    infants TINYINT,
-    paid BOOLEAN
-  )`;
 
-const copyQeury = 'COPY calendar FROM ? WITH DELIMITER "|" AND HEADER=TRUE'
-
+var id = 0;
 /*  
   START: Declare Helper Functions
 */
 const generate10k = (ind1, ind2, callback) => {
   // create a file and write header
   const fileName = path.join(__dirname, `cql${ind2}.csv`);
-  fs.writeFileSync(fileName, 'address,adults,amenities,baths,bed,bedroom,cancelationPolicy,checkInHour,checkOutHour,children,cleaningFee,client_username,endDate,host_about,host_email,host_location,host_name,host_username,host_work,houseRules,id,infants,maxCostPerNight,maxGuests,minCostPerNight,minDaysStay,occupancyTax,paid,ratingScore,reviewCount,serviceFee,startDate\n');
-  // create variables needed to generate fake data and write into csv file
-  const dataLimit = 20;
-  // const dataLimit = (10 ** 4);       // 10k
+  fs.writeFileSync(fileName, 'id,address,adults,amenities,baths,bed,bedroom,cancelationPolicy,checkInHour,checkOutHour,children,cleaningFee,client_username,endDate,host_about,host_email,host_location,host_name,host_username,host_work,houseRules,infants,maxCostPerNight,maxGuests,minCostPerNight,minDaysStay,occupancyTax,paid,ratingScore,reviewCount,serviceFee,startDate\n');
+
+  const dataLimit = (10 ** 4);       // 10k
   const stringLengthLimit = (2 ** 25);  // MDN says different browser has different length limit, and the minimum is (2 ** 27 - 1)
   let tempString = '';
 
 
   for (let i = 0; i < dataLimit; i++) {
     // declare variables that will be stored in the db
-    let id, address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
+    let address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
+    
+    // initialize values for attributes related to 
     client_username = '';
     startDate = '1970-01-01';
     endDate = '1970-01-01';
@@ -74,12 +32,8 @@ const generate10k = (ind1, ind2, callback) => {
     infants = 0;
     paid = false;
 
-
     // generate fake data
-    id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // 10k digit + 1k digit + rest of digits;
-    
-    // address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
-    address = faker.address.streetAddress() // cannot escape , somehow so just delete commas
+    address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
     randNum = Math.random();
     bedroom = randNum < 0.6 ? 1 : randNum < 0.8 ? 2 : 3;
@@ -115,11 +69,14 @@ const generate10k = (ind1, ind2, callback) => {
     host_work = (hostInfDecider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
     host_work = host_work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
-    let numReservations = Math.floor(Math.random() * 12);
+    let numReservations = Math.floor(Math.random() * 11);
     if(numReservations > 0) {
       let dateTracker = new Date();
 
       for (let j=0; j < numReservations; j++) {
+        // set unique value for primary key
+        id++
+
         let client_username = faker.internet.userName();
 
         // generate random startDate
@@ -144,12 +101,15 @@ const generate10k = (ind1, ind2, callback) => {
         paid = (Math.random() < 0.8);
 
         // add generated fake data to temp string
-        tempString += `${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${id}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}|${startDate}\n`;
+        tempString += `${id},${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
       }
     } else {
-      tempString += `${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${id}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}|${startDate}\n`;
-    }
+      // set unique value for primary key
+      id++
 
+      // add generated fake data to temp string
+      tempString += `${id},${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
+    }
 
     // if either temp string is too long or the loop reached to the end, append to the file
     if(tempString.length > stringLengthLimit || i === dataLimit - 1) {
@@ -161,23 +121,18 @@ const generate10k = (ind1, ind2, callback) => {
         }
       });
     }
-
-    // copy to the database if the data generation loop reached to the end
-    if(i === dataLimit - 1) {
-      client.execute(copyQeury);
-    }
   }
 }
 
 
 const generate100k = (ind1, callback) => {
-  let bound = 10;
+  let bound = 1;
   let count = 0;
 
   for(let ind2 = 0; ind2 < bound; ind2++) {
     generate10k(ind1, ind2, () => {
       count++;
-      if (count === 10) {
+      if (count === bound) {
         callback();
       }
     });
@@ -192,8 +147,6 @@ const reinvokeGen100k = () => {
   countMillion++;
   if (countMillion !== generateUpTo) {
     generate100k(countMillion, reinvokeGen100k);
-  } else {
-    client.shutdown();
   }
 }
 /*  
@@ -201,15 +154,3 @@ const reinvokeGen100k = () => {
 */
 
 generate100k(countMillion, reinvokeGen100k);
-
-client.execute(dropTableQuery)
-  .then(() => ( client.execute(createTableQuery) ))
-  .then((result) => {
-    console.log(result);
-    client.shutdown();
-  })
-  .catch((err) => {
-    console.log(err);
-    client.shutdown();
-  })
-
