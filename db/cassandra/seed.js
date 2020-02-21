@@ -66,26 +66,18 @@ const generate10k = (ind1, ind2, callback) => {
   for (let i = 0; i < dataLimit; i++) {
     // declare variables that will be stored in the db
     let id, address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
-    client_username = null;
-    startDate = null;
-    endDate = null;
+    client_username = '';
+    startDate = '1970-01-01';
+    endDate = '1970-01-01';
     adults = 0;
     children = 0;
     infants = 0;
-    paid = null;
+    paid = false;
 
 
     // generate fake data
     id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + i + 1; // 10k digit + 1k digit + rest of digits;
-
-// client_username;
-// startDate;
-// endDate;
-// adults;
-// children;
-// infants;
-// paid;
-
+    
     // address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
     address = faker.address.streetAddress() // cannot escape , somehow so just delete commas
 
