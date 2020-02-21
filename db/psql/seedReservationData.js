@@ -126,7 +126,20 @@ const reinvokeGen10k = () => {
   if (count100k !== generateUpTo) {
     generate10k(count100k, reinvokeGen10k);
   } else {
-    client.end();
+    client.query('ALTER TABLE reservations ADD CONSTRAINT constraint_fk1 FOREIGN KEY (accomodation_id) REFERENCES accomodations(id) ON DELETE CASCADE')
+      .then(() => (
+        client.query('ALTER TABLE reservations ADD CONSTRAINT constraint_fk2 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE')
+      ))
+      .then(() => (
+        client.query('CREATE INDEX res_index ON reservations (accomodation_id)')
+      ))
+      .catch((e) => {
+        console.log('error in adding foreign key constraints of or creating index on reservations table');
+        console.error(e);
+      })
+      .then(()=> {
+        client.end();
+      })
   }
 }
 /*  

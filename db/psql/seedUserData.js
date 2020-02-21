@@ -100,7 +100,14 @@ const reinvokeGen1M = () => {
   if (countMillion !== generateUpTo) {
     generate1M(countMillion, reinvokeGen1M);
   } else {
-    client.end();
+    client.query('ALTER TABLE users ADD PRIMARY KEY (id)')
+      .catch((e) => {
+        console.log('error in adding primary key on users table');
+        console.error(e);
+      })
+      .then(()=> {
+        client.end();
+      })
   }
 }
 /*  
@@ -123,7 +130,7 @@ client.query('DROP TABLE IF EXISTS users CASCADE') // drop table to delete all p
         work VARCHAR(100)
       )`)))
   .catch( (e) => {
-    console.log('error in dropping or creating users tables');
+    console.log('error in dropping or creating users table');
     console.error(e);
     client.end();
   })

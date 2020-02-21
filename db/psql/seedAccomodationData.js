@@ -113,7 +113,17 @@ const reinvokeGen500k = () => {
   if (countMillion !== generateUpTo) {
     generate500k(countMillion, reinvokeGen500k);
   } else {
-    client.end();
+    client.query('ALTER TABLE accomodations ADD PRIMARY KEY (id)')
+      .then(() => (
+        client.query('ALTER TABLE accomodations ADD CONSTRAINT constraint_fk FOREIGN KEY (hostuser) REFERENCES users(id) ON DELETE CASCADE')
+      ))
+      .catch((e) => {
+        console.log('error in adding primary key or foreign key on reservations table');
+        console.error(e);
+      })
+      .then(()=> {
+        client.end();
+      })
   }
 }
 /*  
@@ -149,7 +159,7 @@ client.query('DROP TABLE IF EXISTS accomodations CASCADE') // drop table to dele
       occupancyTax numeric(3,1)
     )`)))
   .catch( (e) => {
-    console.log('error in dropping or creating accomodations tables');
+    console.log('error in dropping or creating accomodations table');
     console.error(e);
     client.end();
   })
