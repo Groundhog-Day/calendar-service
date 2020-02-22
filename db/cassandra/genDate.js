@@ -1,27 +1,27 @@
-//  COPY QUERY
-// COPY calendar (id,id2) FROM '/Users/AlbertKim/Documents/GitHub/HackReactor/senior/SDC/calendar-service/db/cassandra/cql0.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+// COPY QUERY
+// COPY sdc.calendar FROM '/Users/AlbertKim/Documents/GitHub/HackReactor/senior/SDC/calendar-service/db/cassandra/*.csv' WITH DELIMITER='|' AND HEADER=TRUE ;
+
 
 const faker = require('faker');
 const path = require('path');
 const fs = require('fs');
 
-var id = 0;
 /*  
   START: Declare Helper Functions
 */
 const generate10k = (ind1, ind2, callback) => {
   // create a file and write header
-  const fileName = path.join(__dirname, `cql${ind2}.csv`);
-  fs.writeFileSync(fileName, 'id,address,adults,amenities,baths,bed,bedroom,cancelationPolicy,checkInHour,checkOutHour,children,cleaningFee,client_username,endDate,host_about,host_email,host_location,host_name,host_username,host_work,houseRules,infants,maxCostPerNight,maxGuests,minCostPerNight,minDaysStay,occupancyTax,paid,ratingScore,reviewCount,serviceFee,startDate\n');
+  const fileName = path.join(__dirname, `cql${ind1*10 + ind2+1}.csv`);
+  fs.writeFileSync(fileName, 'id|startDate|address|adults|amenities|baths|bed|bedroom|cancelationPolicy|checkInHour|checkOutHour|children|cleaningFee|client_username|endDate|host_about|host_email|host_location|host_name|host_username|host_work|houseRules|infants|maxCostPerNight|maxGuests|minCostPerNight|minDaysStay|occupancyTax|paid|ratingScore|reviewCount|serviceFee\n');
 
-  const dataLimit = (10 ** 4);       // 10k
+  const dataLimit = (10 ** 4);          // 1k
   const stringLengthLimit = (2 ** 25);  // MDN says different browser has different length limit, and the minimum is (2 ** 27 - 1)
   let tempString = '';
 
 
   for (let i = 0; i < dataLimit; i++) {
     // declare variables that will be stored in the db
-    let address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
+    let id, address, bedroom, bed, baths, maxGuests, minDaysStay, checkInHour, checkOutHour, amenities, houseRules, cancelationPolicy, host_username, host_name, host_email, host_about, host_location, host_work, reviewCount, ratingScore, minCostPerNight, maxCostPerNight, serviceFee, cleaningFee, occupancyTax, client_username, startDate, endDate, adults, children, infants,paid;
     
     // initialize values for attributes related to 
     client_username = '';
@@ -32,8 +32,11 @@ const generate10k = (ind1, ind2, callback) => {
     infants = 0;
     paid = false;
 
+    // set unique value for primary key
+    id = (ind1 * (dataLimit * 10)) + (ind2 * dataLimit) + (i+1);
+
     // generate fake data
-    address = (faker.address.streetAddress()).replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    address = faker.address.streetAddress(); // cannot escape , somehow so just delete commas
 
     randNum = Math.random();
     bedroom = randNum < 0.6 ? 1 : randNum < 0.8 ? 2 : 3;
@@ -64,19 +67,16 @@ const generate10k = (ind1, ind2, callback) => {
     host_about = (hostInfDecider < 0.95) ? '""' : faker.lorem.sentence();
 
     host_location = (hostInfDecider < 0.8) ? '""' : faker.fake("{{address.streetAddress}}, {{address.city}}, {{address.country}}");
-    host_location = host_location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    // host_location = host_location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
     host_work = (hostInfDecider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
-    host_work = host_work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    // host_work = host_work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
     let numReservations = Math.floor(Math.random() * 11);
     if(numReservations > 0) {
       let dateTracker = new Date();
 
       for (let j=0; j < numReservations; j++) {
-        // set unique value for primary key
-        id++
-
         let client_username = faker.internet.userName();
 
         // generate random startDate
@@ -101,14 +101,11 @@ const generate10k = (ind1, ind2, callback) => {
         paid = (Math.random() < 0.8);
 
         // add generated fake data to temp string
-        tempString += `${id},${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
+        tempString += `${id}|${startDate}|${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}\n`;
       }
     } else {
-      // set unique value for primary key
-      id++
-
       // add generated fake data to temp string
-      tempString += `${id},${address},${adults},${amenities},${baths},${bed},${bedroom},${cancelationPolicy},${checkInHour},${checkOutHour},${children},${cleaningFee},${client_username},${endDate},${host_about},${host_email},${host_location},${host_name},${host_username},${host_work},${houseRules},${infants},${maxCostPerNight},${maxGuests},${minCostPerNight},${minDaysStay},${occupancyTax},${paid},${ratingScore},${reviewCount},${serviceFee},${startDate}\n`;
+      tempString += `${id}|${startDate}|${address}|${adults}|${amenities}|${baths}|${bed}|${bedroom}|${cancelationPolicy}|${checkInHour}|${checkOutHour}|${children}|${cleaningFee}|${client_username}|${endDate}|${host_about}|${host_email}|${host_location}|${host_name}|${host_username}|${host_work}|${houseRules}|${infants}|${maxCostPerNight}|${maxGuests}|${minCostPerNight}|${minDaysStay}|${occupancyTax}|${paid}|${ratingScore}|${reviewCount}|${serviceFee}\n`;
     }
 
     // if either temp string is too long or the loop reached to the end, append to the file
@@ -121,12 +118,15 @@ const generate10k = (ind1, ind2, callback) => {
         }
       });
     }
+    if(i === dataLimit - 1) {
+      callback();
+    }
   }
 }
 
 
 const generate100k = (ind1, callback) => {
-  let bound = 1;
+  let bound = 10;
   let count = 0;
 
   for(let ind2 = 0; ind2 < bound; ind2++) {
@@ -140,17 +140,19 @@ const generate100k = (ind1, callback) => {
 }
 
 
-let countMillion = 0; // tracks how many data in million are generated
-let generateUpTo = 1; // decides the upper limit of how many data in million are generated
+// manually change 0 to 1~99 for data generation
+// search by id = *100k
+let count10k = 0*1;             // tracks how many data in million are generated
+let generateUpTo = count10k+1;  // generate 10k at a time
 
 const reinvokeGen100k = () => {
-  countMillion++;
-  if (countMillion !== generateUpTo) {
-    generate100k(countMillion, reinvokeGen100k);
+  count10k++;
+  if (count10k !== generateUpTo) {
+    generate100k(count10k, reinvokeGen100k);
   }
 }
 /*  
   END: Declare Helper Functions
 */
 
-generate100k(countMillion, reinvokeGen100k);
+generate100k(count10k, reinvokeGen100k);
