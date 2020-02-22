@@ -9,7 +9,7 @@ const client = new cassandra.Client({
 const dropTableQuery = 'DROP TABLE IF EXISTS calendar';
 const createTableQuery =
   `CREATE TABLE calendar (
-    id int PRIMARY KEY,
+    id int,
     address ASCII,
     bedroom TINYINT,
     bed TINYINT,
@@ -41,6 +41,7 @@ const createTableQuery =
     children TINYINT,
     infants TINYINT,
     paid BOOLEAN,
+    PRIMARY KEY (id, startDate)
   )`;
 
 
