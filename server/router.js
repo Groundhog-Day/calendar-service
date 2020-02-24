@@ -12,14 +12,12 @@ router.post('/:id/reservation', (req, res) => {
       res.sendStatus(201);
     }
   })
-
-  // res.send('Under Testing');
 });
 
 // READ / GET
 router.get('/:id', (req, res) => {
   let id = req.params.id;
-  let { startDate, endDate, adults, children} = req.query;
+  let { startDate, endDate, adults, children } = req.query;
   
   if(!startDate || !endDate || (adults === 0) || (children === undefined)) { // check if any of query parms are missing
     psqlQuery.getAccomodation(id, (err, data) => { // get data about accomodation
@@ -83,16 +81,15 @@ router.put('/:id/reservation/:id', (req, res) => {
 });
 
 // Delete / DELETE (extension)
-router.delete('/:id/reservation/:starDate', (req, res) => {
+router.delete('/:id/reservation', (req, res) => {
   let accomodation_id = parseInt(req.originalUrl.match(/(?<=listings\/)(.*)(?=\/reservation)/));
-  let startDate = req.params.starDate;
+  let {user_id, startDate} = req.body;
 
-  psqlQuery.deleteReservation(accomodation_id, startDate, (err, result) => {
+  psqlQuery.deleteReservation(accomodation_id, user_id, startDate, (err, result) => {
     if (err) {
       res.sendStatus(500);
     } else {
-      console.log(result);
-      res.send('TESTING DELETE')
+      res.sendStatus(200);
     }
   });
 

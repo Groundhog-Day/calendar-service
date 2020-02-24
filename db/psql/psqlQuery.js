@@ -45,19 +45,19 @@ const putReservation = (id, newData, callback) => {
   callback();
 };
 
-const deleteReservation = (accomodation_id, startDate, callback) => {
-  const query = {
-    text: 'DELETE FROM reservations WHERE accomodation_id = ($1) AND startDate = ($2)',
-    values: [accomodation_id, startDate]
+const deleteReservation = (accomodation_id, user_id, startDate, callback) => {
+  const deleteQuery = {
+    text: 'DELETE FROM reservations WHERE accomodation_id=$1 AND user_id=$2 AND startDate=$3',
+    values: [accomodation_id, user_id, startDate]
   }
 
-  client.query(query)
-    .then((result) => {
-      callback(null, result);
-    })
-    .catch((err) => {
+  client.query(deleteQuery, (err, data) => {
+    if (err) {
       callback(err, null);
-    })  
+    } else {
+      callback(null, data);
+    }
+  });
 };
 
 module.exports = {
