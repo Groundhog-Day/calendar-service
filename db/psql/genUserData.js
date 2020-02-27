@@ -1,6 +1,3 @@
-// (sub)modules to connect with psql
-
-// (sub)modules to generate fake data and write into csv file
 const faker = require('faker');
 const fs = require('fs');
 const path = require('path');
@@ -51,6 +48,13 @@ const generate100k = (ind1, ind2, callback) => {
         }
       });
     }
+
+    // copy to the database if the data generation loop reached to the end
+    if(i === dataLimit - 1) {
+      callback();
+    }
+  }
+  
 }
 
 
