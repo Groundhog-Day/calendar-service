@@ -1,13 +1,15 @@
+// (sub)modules to connect with psql
 const { Client } = require('pg');
 const client = new Client({
   user: 'ubuntu',
   host: 'localhost',
   database: 'ubuntu',
-  password: 'hrsf125sdc',
+  password: 'hrsf125_ak',
   port: 5432
 });
 const copyFrom = require('pg-copy-streams').from;
 
+// (sub)modules to generate fake data and write into csv file
 const faker = require('faker');
 const fs = require('fs');
 const path = require('path');
@@ -17,8 +19,7 @@ const path = require('path');
 */
 const generate100k = (ind1, ind2, callback) => {
   // create a file and write header
-  let fileNumber = ind1.toString().padStart(3,'0') + ind2.toString();
-  const fileName = path.join(__dirname, `users${fileNumber}.csv`);
+  const fileName = path.join(__dirname, `users${ind2}.csv`);
   fs.writeFileSync(fileName, 'id,username,name,email,about,location,work\n');
 
   // create variables needed to generate fake data and write into csv file
@@ -62,7 +63,7 @@ const generate100k = (ind1, ind2, callback) => {
     // copy to the database if the data generation loop reached to the end
     if(i === dataLimit - 1) {
       // initiate pg-copy-stream
-      let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV DELIMITER HEADER'));
+      let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV HEADER'));
       let fileStream = fs.createReadStream(fileName);
 
       // event(?) listner 
@@ -79,7 +80,6 @@ const generate100k = (ind1, ind2, callback) => {
       fileStream.pipe(stream);
     }
   }
-  
 }
 
 
@@ -120,6 +120,7 @@ const reinvokeGen1M = () => {
   END: Declare Helper Functions
 */
 
-client.connect();
 
-generate1M(countMillion, reinvokeGen1M);
+client.connect(); // connect to psql server
+
+generate1M(countMillion, reinvokeGen1M);    
