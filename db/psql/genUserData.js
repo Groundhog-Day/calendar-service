@@ -1,3 +1,13 @@
+const { Client } = require('pg');
+const client = new Client({
+  user: 'ubuntu',
+  host: 'localhost',
+  database: 'ubuntu',
+  password: 'hrsf125sdc',
+  port: 5432
+});
+const copyFrom = require('pg-copy-streams').from;
+
 const faker = require('faker');
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +19,7 @@ const generate100k = (ind1, ind2, callback) => {
   // create a file and write header
   let fileNumber = ind1.toString().padStart(3,'0') + ind2.toString();
   const fileName = path.join(__dirname, `users${fileNumber}.csv`);
-  fs.writeFileSync(fileName, 'id|username|name|email|about|location|work\n');
+  fs.writeFileSync(fileName, 'id,username,name,email,about,location,work\n');
 
   // create variables needed to generate fake data and write into csv file
   const dataLimit = (10 ** 4);          // 100k
@@ -28,14 +38,14 @@ const generate100k = (ind1, ind2, callback) => {
     let about = (decider < 0.95) ? '""' : faker.lorem.sentence();
 
     let location = (decider < 0.8) ? '""' : faker.fake("{{address.streetAddress}} {{address.city}} {{address.country}}");
-    // location = location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    location = location.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
     let work = (decider < 0.8) ? '""' : faker.fake("{{name.jobTitle}} at {{company.suffixes}}");
-    // work = work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
+    work = work.replace(/,/g, ''); // cannot escape , somehow so just delete commas
 
 
     // add generated fake data to temp string
-    tempString += `${id}|${username}|${name}|${email}|${about}|${location}|${work}\n`;
+    tempString += `${id},${username},${name},${email},${about},${location},${work}\n`;
 
 
     // if either temp string is too long or the loop reached to the end, append to the file
@@ -51,7 +61,22 @@ const generate100k = (ind1, ind2, callback) => {
 
     // copy to the database if the data generation loop reached to the end
     if(i === dataLimit - 1) {
-      callback();
+      // initiate pg-copy-stream
+      let stream = client.query(copyFrom('COPY users FROM STDIN WITH CSV DELIMITER HEADER'));
+      let fileStream = fs.createReadStream(fileName);
+
+      // event(?) listner 
+      fileStream.on('error', (err) => console.log('Error in Reading: ', err));
+      stream.on('error', (err) => console.log('Error in Copying: ', err));
+      stream.on('end', () => { // upon copying data, delete csv file
+        fs.unlink(fileName, (err) => {
+          if (err) throw err;
+          callback();
+        });
+      });
+
+      // pipe everything described above
+      fileStream.pipe(stream);
     }
   }
   
@@ -80,10 +105,21 @@ const reinvokeGen1M = () => {
   countMillion++;
   if (countMillion !== generateUpTo) {
     generate1M(countMillion, reinvokeGen1M);
+  } else {
+    client.query('ALTER TABLE users ADD PRIMARY KEY (id)')
+      .catch((e) => {
+        console.log('error in adding primary key on users table');
+        console.error(e);
+      })
+      .then(()=> {
+        client.end();
+      })
   }
 }
 /*  
   END: Declare Helper Functions
 */
+
+client.connect();
 
 generate1M(countMillion, reinvokeGen1M);
