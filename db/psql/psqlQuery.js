@@ -1,5 +1,12 @@
 const { Client } = require('pg');
-const client = new Client();
+// const client = new Client();
+const client = new Client({
+  user: 'ubuntu',
+  server: 'localhost',
+  database: 'ubuntu',
+  password: 'hrsf125_ak',
+  port: 5432
+});
 
 client.connect()
   .then(() => console.log('Connected to PostgreSQL'));
