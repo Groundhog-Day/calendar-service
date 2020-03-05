@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 app.set('port', port);
 
 // logging and parsing
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
 // serve static file
