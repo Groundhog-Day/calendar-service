@@ -2,14 +2,18 @@ const { Client } = require('pg');
 // const client = new Client();
 const client = new Client({
   user: 'ubuntu',
-  server: 'localhost',
+  host: '172.31.47.229',
   database: 'ubuntu',
   password: 'hrsf125_ak',
   port: 5432
 });
 
 client.connect()
-  .then(() => console.log('Connected to PostgreSQL'));
+  .then(() => console.log('Connected to PostgreSQL'))
+  .catch((e)=> {
+    console.log('FAILED to connect to PostgreSQL');
+    console.log(e);
+  });
 
 const postReservation = (accomodation_id, data, callback) => {
   let {user_id, startDate, endDate, adults, children, infants, paid} = data;
